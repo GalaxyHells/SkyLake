@@ -1,0 +1,16 @@
+[
+{
+  "modid": "skylake",
+  "name": "SkyLake",
+  "description": "Mod focado no modo SkyBlock da redecanary.fun.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["GalaxyHells"],
+  "credits": "Made by GalaxyHells",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
