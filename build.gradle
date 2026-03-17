@@ -22,7 +22,6 @@ minecraft {
     mappings = "stable_20"
 }
 
-// Sem dependências externas! 100% Raiz.
 dependencies {}
 
 processResources {
