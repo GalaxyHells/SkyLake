@@ -9,6 +9,7 @@ public class ConfigHandler {
     private static final File configFile = new File("config/skylake.cfg");
     private static final Properties props = new Properties();
     public static boolean rarityBackground = true;
+    public static boolean statOverlay = true;
 
     public static boolean bossAlert = true;
 
@@ -37,6 +38,7 @@ public class ConfigHandler {
             }
 
             rarityBackground = Boolean.parseBoolean(props.getProperty("rarityBackground", "true"));
+            statOverlay = Boolean.parseBoolean(props.getProperty("statOverlay", "true"));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -62,6 +64,7 @@ public class ConfigHandler {
             props.setProperty("rarityBackground", String.valueOf(rarityBackground));
 
             props.store(output, "SkyLake Configuration");
+            props.setProperty("statOverlay", String.valueOf(statOverlay));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

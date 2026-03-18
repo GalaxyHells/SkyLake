@@ -8,11 +8,17 @@ public class SkyLakeConfig extends GuiScreen {
 
     @Override
     public void initGui() {
+        int x = this.width / 2 - 100;
+        int yStart = this.height / 2 - 40;
+
         // Boss Alert
-        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 2 - 35, 200, 20, getBossAlertText()));
+        this.buttonList.add(new GuiButton(1, x, yStart, 200, 20, getBossAlertText()));
 
         // Rarity Background
-        this.buttonList.add(new GuiButton(2, this.width / 2 - 100, this.height / 2 - 10, 200, 20, getRarityText()));
+        this.buttonList.add(new GuiButton(2, x, yStart + 25, 200, 20, getRarityText()));
+
+        // Stat Overlay
+        this.buttonList.add(new GuiButton(3, x, yStart + 50, 200, 20, getStatsText()));
     }
 
     private String getBossAlertText() {
@@ -24,6 +30,10 @@ public class SkyLakeConfig extends GuiScreen {
         return "Rarity Background: " + (ConfigHandler.rarityBackground ? "§aON" : "§cOFF");
     }
 
+    private String getStatsText() {
+        return "Stats HUD: " + (ConfigHandler.statOverlay ? "§aON" : "§cOFF");
+    }
+
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 1) {
@@ -33,6 +43,10 @@ public class SkyLakeConfig extends GuiScreen {
             // Alterna a nova função
             ConfigHandler.rarityBackground = !ConfigHandler.rarityBackground;
             button.displayString = getRarityText();
+        } else if (button.id == 3) {
+            // Alterna o HUD de Vida e Mana
+            ConfigHandler.statOverlay = !ConfigHandler.statOverlay;
+            button.displayString = getStatsText();
         }
 
         // Salva qualquer alteração no arquivo

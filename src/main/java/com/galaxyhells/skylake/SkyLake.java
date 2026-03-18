@@ -2,6 +2,7 @@ package com.galaxyhells.skylake;
 
 import com.galaxyhells.skylake.commands.SkyLakeCommand;
 import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.features.hud.StatOverlay;
 import com.galaxyhells.skylake.features.render.TreasureWaypoint;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +41,8 @@ public class SkyLake {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.inventory.SlotLockFeature());
         // Registro da feature: Rarity Background
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.inventory.RarityBackground());
+        // Registro da feature: Stat Overlay
+        MinecraftForge.EVENT_BUS.register(new StatOverlay());
 
         System.out.println("[" + NAME + "] Mod inicializado com sucesso no modo Raiz!");
     }
