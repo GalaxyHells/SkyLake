@@ -2,7 +2,10 @@ package com.galaxyhells.skylake;
 
 import com.galaxyhells.skylake.commands.SkyLakeCommand;
 import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.data.ItemDataManager;
+import com.galaxyhells.skylake.features.hud.SkyTabMenuGui;
 import com.galaxyhells.skylake.features.hud.StatOverlay;
+import com.galaxyhells.skylake.features.inventory.TooltipListener;
 import com.galaxyhells.skylake.features.render.TreasureWaypoint;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -43,6 +46,22 @@ public class SkyLake {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.inventory.RarityBackground());
         // Registro da feature: Stat Overlay
         MinecraftForge.EVENT_BUS.register(new StatOverlay());
+
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.hud.TabMenuHandler());
+        //
+        ItemDataManager.loadLocalPrices();
+        MinecraftForge.EVENT_BUS.register(new TooltipListener());
+        //
+
+        // Registro da feature: Mutant Timer
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.hud.MutantTimer());
+
+        // 1. Registra a tecla visualmente nas opções de controles do Minecraft
+        com.galaxyhells.skylake.utils.KeybindManager.register();
+
+        // 2. Registra o ouvinte para detectar quando você aperta a tecla
+        // ATENÇÃO: No 1.8.9, eventos de teclado ficam no FMLCommonHandler, e não no EVENT_BUS padrão do Forge!
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(new com.galaxyhells.skylake.utils.KeybindManager());
 
         System.out.println("[" + NAME + "] Mod inicializado com sucesso no modo Raiz!");
     }

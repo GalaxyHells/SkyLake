@@ -24,7 +24,8 @@ public class StatOverlay {
 
         // Esconde os corações e a barra de comida originais
         if (event.type == RenderGameOverlayEvent.ElementType.HEALTH ||
-                event.type == RenderGameOverlayEvent.ElementType.FOOD) {
+                event.type == RenderGameOverlayEvent.ElementType.FOOD ||
+                event.type == RenderGameOverlayEvent.ElementType.ARMOR) {
             event.setCanceled(true);
         }
     }
@@ -43,24 +44,37 @@ public class StatOverlay {
         // Posições base (em cima de onde seriam os corações e fome)
         int xHP = screenWidth / 2 - 91;
         int xMana = screenWidth / 2 + 10;
-        int y = screenHeight - 39;
+        int y = screenHeight - 41; //39
 
         // --- DESENHO DA BARRA DE VIDA ---
         drawStatBar(xHP, y, 81, ActionbarParser.currentHP, ActionbarParser.maxHP, 0xFFFF5555);
         mc.fontRendererObj.drawStringWithShadow(ActionbarParser.currentHP + "/" + ActionbarParser.maxHP, xHP + 2, y + 1, 0xFFFFFF);
 
         // --- DESENHO DA BARRA DE MANA ---
-        drawStatBar(xMana, y, 81, ActionbarParser.currentMana, ActionbarParser.maxMana, 0xFF5555FF);
+        drawStatBar(xMana, y, 81, ActionbarParser.currentMana, ActionbarParser.maxMana, 0xFF0066FF);
         mc.fontRendererObj.drawStringWithShadow(ActionbarParser.currentMana + "/" + ActionbarParser.maxMana, xMana + 2, y + 1, 0xFFFFFF);
     }
 
     private void drawStatBar(int x, int y, int width, int current, int max, int color) {
-        // Fundo cinza da barra
+        // --- DESENHO DA BORDA CHANFRADA (Quinas para dentro) ---
+        // Borda Superior (Recuada 1px nas pontas)
+        Gui.drawRect(x, y - 1, x + width, y, 0xFF000000);
+        // Borda Inferior (Recuada 1px nas pontas)
+        Gui.drawRect(x, y + 9, x + width, y + 10, 0xFF000000);
+        // Borda Esquerda (Recuada 1px nas pontas)
+        Gui.drawRect(x - 1, y, x, y + 9, 0xFF000000);
+        // Borda Direita (Recuada 1px nas pontas)
+        Gui.drawRect(x + width, y, x + width + 1, y + 9, 0xFF000000);
+
+        // --- CONTEÚDO DA BARRA ---
+        // Fundo cinza translúcido
         Gui.drawRect(x, y, x + width, y + 9, 0x90000000);
 
-        // Progresso da barra
-        float percentage = (float) current / max;
-        int barWidth = (int) (width * percentage);
-        Gui.drawRect(x, y, x + barWidth, y + 9, color);
+        // Progresso da barra (Vida ou Mana)
+        if (max > 0) {
+            float percentage = Math.min(1.0F, (float) current / max);
+            int barWidth = (int) (width * percentage);
+            Gui.drawRect(x, y, x + barWidth, y + 9, color);
+        }
     }
 }
