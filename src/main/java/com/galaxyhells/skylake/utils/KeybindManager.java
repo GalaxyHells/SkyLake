@@ -12,12 +12,16 @@ public class KeybindManager {
 
     // Declara a nossa tecla
     public static KeyBinding openMenuKey;
+    public static KeyBinding lockSlotKey;
 
     // Método para registrar a tecla nas configurações do jogo
     public static void register() {
         // Parâmetros: Nome da ação, Tecla padrão (P), Categoria nas opções do Minecraft
         openMenuKey = new KeyBinding("Abrir Menu", Keyboard.KEY_P, "SkyLake");
         ClientRegistry.registerKeyBinding(openMenuKey);
+
+        lockSlotKey = new KeyBinding("Bloquear Slot", Keyboard.KEY_L, "SkyLake");
+        ClientRegistry.registerKeyBinding(lockSlotKey);
     }
 
     // Fica ouvindo os inputs do teclado

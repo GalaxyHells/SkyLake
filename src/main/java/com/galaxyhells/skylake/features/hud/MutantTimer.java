@@ -20,6 +20,7 @@ public class MutantTimer {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
+        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantTimer) return;
         if (event.phase != TickEvent.Phase.END) return;
 
         Minecraft mc = Minecraft.getMinecraft();
@@ -54,6 +55,7 @@ public class MutantTimer {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Post event) {
+        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantTimer) return;
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
         Minecraft mc = Minecraft.getMinecraft();

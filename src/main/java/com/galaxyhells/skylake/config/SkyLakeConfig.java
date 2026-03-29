@@ -19,19 +19,40 @@ public class SkyLakeConfig extends GuiScreen {
 
         // Stat Overlay
         this.buttonList.add(new GuiButton(3, x, yStart + 50, 200, 20, getStatsText()));
+
+        // Mutant Timer
+        this.buttonList.add(new GuiButton(4, x, yStart + 75, 200, 20, getMutantTimerText()));
+
+        // Magma Timer
+        this.buttonList.add(new GuiButton(5, x, yStart + 100, 200, 20, getMagmaTimerText()));
+
+        // Magma Timer
+        this.buttonList.add(new GuiButton(6, x, yStart + 125, 200, 20, getMutanthighlightText()));
     }
 
     private String getBossAlertText() {
         // Lê diretamente do Handler para evitar dessincronização
-        return "Boss Alert: " + (ConfigHandler.bossAlert ? "§aON" : "§cOFF");
+        return "Alerta de spawn Enderman Mutante: " + (ConfigHandler.bossAlert ? "§aON" : "§cOFF");
     }
 
     private String getRarityText() {
-        return "Rarity Background: " + (ConfigHandler.rarityBackground ? "§aON" : "§cOFF");
+        return "Cor de fundo do item: " + (ConfigHandler.rarityBackground ? "§aON" : "§cOFF");
     }
 
     private String getStatsText() {
-        return "Stats HUD: " + (ConfigHandler.statOverlay ? "§aON" : "§cOFF");
+        return "HUD de Stats: " + (ConfigHandler.statOverlay ? "§aON" : "§cOFF");
+    }
+
+    private String getMutantTimerText() {
+        return "Contagem pro Enderman Mutante: " + (ConfigHandler.mutantTimer ? "§aON" : "§cOFF");
+    }
+
+    private String getMagmaTimerText() {
+        return "Contagem pro Magma Boss: " + (ConfigHandler.magmaTimer ? "§aON" : "§cOFF");
+    }
+
+    private String getMutanthighlightText() {
+        return "Destacar Enderman Mutante: " + (ConfigHandler.mutantHighlight ? "§aON" : "§cOFF");
     }
 
     @Override
@@ -47,6 +68,14 @@ public class SkyLakeConfig extends GuiScreen {
             // Alterna o HUD de Vida e Mana
             ConfigHandler.statOverlay = !ConfigHandler.statOverlay;
             button.displayString = getStatsText();
+        } else if (button.id == 4) {
+            // Alterna o display do Tempo pro Mutante
+            ConfigHandler.mutantTimer = !ConfigHandler.mutantTimer;
+            button.displayString = getMutantTimerText();
+        } else if (button.id == 5) {
+            // Alterna o display do Tempo pro Magma Boss
+            ConfigHandler.magmaTimer = !ConfigHandler.magmaTimer;
+            button.displayString = getMagmaTimerText();
         }
 
         // Salva qualquer alteração no arquivo

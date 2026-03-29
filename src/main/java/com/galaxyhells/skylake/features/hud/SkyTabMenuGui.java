@@ -57,9 +57,35 @@ public class SkyTabMenuGui extends GuiScreen {
         int y = (screenH - menuH) / 2;
         int margin = 4;
 
+        // --- CÓDIGO DO NOVO BOTÃO DE CONFIGURAÇÃO ---
+        int settingsX = x + menuW - 25; // Canto direito
+        int settingsY = y + 10;        // Topo
+        boolean settingsHovered = mouseX >= settingsX && mouseX <= settingsX + 20 && mouseY >= settingsY && mouseY <= settingsY + 20;
+
+        // Desenha o fundo do mini-botão se estiver com o mouse em cima
+        if (settingsHovered) {
+            Gui.drawRect(settingsX - 2, settingsY - 2, settingsX + 18, settingsY + 18, 0x80FFFFFF);
+        }
+
+        // Renderiza o ícone do Comparador (Representando Configurações)
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(settingsX, settingsY, 0);
+        GlStateManager.scale(1.0F, 1.0F, 1.0F);
+        this.itemRender.renderItemIntoGUI(new ItemStack(Items.comparator), 0, 0);
+        GlStateManager.popMatrix();
+
+        // Se estiver com o mouse em cima, mostra o texto "Configurações"
+        if (settingsHovered) {
+            this.drawHoveringText(java.util.Arrays.asList("§bConfigurações SkyLake"), mouseX, mouseY);
+        }
+        // --------------------------------------------
+
         // Fundo e Título
         drawMenuFrame(x, y, menuW, menuH, 0xCC111111);
-        String title = currentPage == 0 ? "§6SkyLake §fMenu" : "§bSkyLake §fTeleportes";
+        String title = "";
+        if (currentPage == 0) title = "§6SkyLake §fMenu";
+        if (currentPage == 1) title = "§bSkyLake §fTeleportes";
+        if (currentPage == 1) title = "§bSkyLake §fPreços";
         this.fontRendererObj.drawStringWithShadow(title, x + menuW / 2 - this.fontRendererObj.getStringWidth(title) / 2, y + 12, 0xFFFFFF);
 
         // Área útil dos botões
@@ -74,15 +100,16 @@ public class SkyTabMenuGui extends GuiScreen {
         if (currentPage == 0) {
             // PÁGINA PRINCIPAL
             renderButton(0, innerX, innerY, buttonW, innerH, "§bTeleportes", Items.compass, mouseX, mouseY, "Warps rápidos...");
-            renderButton(1, innerX + buttonW + gap, innerY, buttonW, innerH, "§7Em breve...", Items.writable_book, mouseX, mouseY, "Slayers e Skills");
+            renderButton(1, innerX + buttonW + gap, innerY, buttonW, innerH, "§aLista de preços.", Items.writable_book, mouseX, mouseY, "Slayers e Skills");
             renderButton(2, innerX + (buttonW + gap) * 2, innerY, buttonW, innerH, "§7Em breve...", Item.getItemFromBlock(Blocks.anvil), mouseX, mouseY, "Minions e Craft");
         }
         else if (currentPage == 1) {
-            int cols = 5; // Definido para 5 colunas
+            int cols = 6; // Definido para 5 colunas
             int spacing = 4;
             // Cálculo exato para preencher a largura sem sobras
             int btnW = (innerW - (spacing * (cols - 1))) / cols;
-            int btnH = 22;
+            int btnH = (innerW - (spacing * (cols - 1))) / cols;
+            btnH = (int)(btnH * 0.75);
 
             for (int i = 0; i < WARPS_DATA.length; i++) {
                 int col = i % cols;
@@ -108,6 +135,76 @@ public class SkyTabMenuGui extends GuiScreen {
 
                 drawSmallButton(bx, by, btnW, btnH, WARPS_DATA[i][0], icon, mouseX, mouseY);
             }
+        }
+        else if (currentPage == 2) {
+            int colW = ((innerW - 20) / 3);
+            int curY = innerY;
+            int spacing = 11; // Aumentado levemente para acomodar as sub-linhas
+
+            // --- COLUNA 1: DRAGÕES (DETALHADO) ---
+            drawCategoryTitle(innerX, curY, "§5§lArmaduras de Dragão");
+            curY += 14;
+
+            // Dados organizados: {Nome, Set Total, 10 Escamas, Cap, Peit, Calça, Bota}
+            String[][] dragons = {
+                    {"Superior", "200kk", "8.3kk", "41.5k", "66.4k", "58.1k", "33.2k"},
+                    {"Forte", "36kk", "1.5kk", "7.5k", "12k", "10.5k", "6k"},
+                    {"Instável", "30kk", "1.25kk", "6.2k", "10k", "8.7k", "5k"},
+                    {"Jovem", "20kk", "830k", "4.1k", "6.6k", "5.8k", "3.3k"},
+                    {"Sábio", "15kk", "625k", "3.1k", "5k", "4.3k", "2.5k"},
+                    {"Ancião", "10kk", "410k", "2k", "3.2k", "2.8k", "1.6k"},
+                    {"Protetor", "8kk", "330k", "1.6k", "2.6k", "2.3k", "1.3k"}
+            };
+
+            for (String[] d : dragons) {
+                // Linha principal: Nome + Set + Escamas
+                this.fontRendererObj.drawString("§f" + d[0] + ": §e" + d[1] + " §8| §d" + d[2] + " (esc)", innerX + 2, curY, 0xFFFFFF);
+                curY += 9;
+                // Sub-linha: Partes individuais (Cap, Peit, Cal, Bot)
+                String parts = "§7C:" + d[3] + " P:" + d[4] + " L:" + d[5] + " B:" + d[6];
+                this.fontRendererObj.drawString(parts, innerX + 4, curY, 0xFFFFFF);
+                curY += spacing;
+            }
+
+            // --- COLUNA 2: JARDIM & HORTALIÇAS ---
+            curY = innerY;
+            int col2X = innerX + colW + 10;
+            drawCategoryTitle(col2X, curY, "§a§lMini Jardim");
+            curY += 14;
+            String[][] garden = {{"Livro Hiper", "750k"}, {"Enxada Pol.", "1.8kk"}, {"Hidromel 5", "7.5kk"}, {"Salada Frut.", "600k"}, {"Buquê", "850k"}, {"Recombin.", "18.75kk"}};
+            for(String[] s : garden) { drawPriceLine(col2X, curY, s[0], s[1]); curY += 10; }
+
+            curY += 8;
+            drawCategoryTitle(col2X, curY, "§2§lHortaliças");
+            curY += 14;
+            drawPriceLine(col2X, curY, "Adubo (Pack)", "400k"); curY += 10;
+            drawPriceLine(col2X, curY, "Raiz (Pack)", "38.4kk");
+
+            // --- COLUNA 3: OUTROS & COMBATE ---
+            curY = innerY;
+            int col3X = col2X + colW + 10;
+            drawCategoryTitle(col3X, curY, "§6§lMinions & Itens");
+            curY += 14;
+            drawPriceLine(col3X, curY, "S. Compact.", "650k"); curY += 10;
+            drawPriceLine(col3X, curY, "Dep. Grande", "300k"); curY += 10;
+            drawPriceLine(col3X, curY, "B. Magma", "1.2kk");
+
+            curY += 18;
+            drawCategoryTitle(col3X, curY, "§c§lArmas (Arcos/Esp.)");
+            curY += 14;
+            drawPriceLine(col3X, curY, "Pigman", "15kk"); curY += 10;
+            drawPriceLine(col3X, curY, "AOTE", "1kk"); curY += 10;
+            drawPriceLine(col3X, curY, "Leaping", "10kk"); curY += 10;
+            drawPriceLine(col3X, curY, "Apollo", "1kk");
+
+            // --- Footer Notes
+            int footerX = innerX + 2;
+            int footerY = menuH + 3;
+
+            footerY  = menuH + 5;
+            this.fontRendererObj.drawStringWithShadow("Nota: C = Capacete, P = Peitoral, L = Calça, B = Botas, Esc = 10 Escamas", footerX, footerY, 0xFFFFFF);
+            footerY = menuH + 18;
+            this.fontRendererObj.drawStringWithShadow("Nota: k = 1.000 (mil), kk = 1.000.000 (milhão), b = 1.000.000.000 (bilhão)", footerX, footerY, 0xFFFFFF);
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -180,20 +277,39 @@ public class SkyTabMenuGui extends GuiScreen {
         if (stack == null || stack.getItem() == null) return;
 
         boolean hovered = mx >= x && mx <= x + w && my >= y && my <= y + h;
+
         // Fundo do botão
         Gui.drawRect(x, y, x + w, y + h, hovered ? 0xFF444444 : 0xFF181818);
-
+        // Borda superior decorativa
         Gui.drawRect(x, y, x + w, y + 1, 0xFF333333);
 
-        if (stack != null && stack.getItem() != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 4, y + (h / 2) - 8, 0);
-            GlStateManager.scale(0.8F, 0.8F, 1.0F);
-            this.itemRender.renderItemIntoGUI(stack, 0, 0);
-            GlStateManager.popMatrix();
-        }
+        // --- RENDERIZAÇÃO DO TEXTO (TOPO CENTRALIZADO) ---
+        // Calculamos a largura do texto para subtrair da metade da largura do botão
+        int textX = x + (w / 2) - (this.fontRendererObj.getStringWidth(label) / 2);
+        int textY = y + 4; // 4 pixels de distância do topo
+        this.fontRendererObj.drawStringWithShadow(label, textX, textY, 0xFFFFFF);
 
-        this.fontRendererObj.drawStringWithShadow(label, x + 22, y + (h / 2) - 4, 0xFFFFFF);
+        // --- RENDERIZAÇÃO DO ÍCONE (CENTRO GEOMÉTRICO) ---
+        // Itens no Minecraft têm 16x16 pixels.
+        // Centralizamos usando (Tamanho do Botão / 2) - (Metade do Item)
+        int iconX = x + (w / 2) - 8;
+        int iconY = y + (h / 2) - 8;
+
+        GlStateManager.pushMatrix();
+        // Renderizamos o item diretamente na posição calculada
+        this.itemRender.renderItemIntoGUI(stack, iconX, iconY);
+        GlStateManager.popMatrix();
+    }
+
+    private void drawCategoryTitle(int x, int y, String title) {
+        this.fontRendererObj.drawString(title, x, y, 0xFFFFFF);
+        Gui.drawRect(x, y + 9, x + 80, y + 10, 0x50FFFFFF); // Linha decorativa embaixo
+    }
+
+    private void drawPriceLine(int x, int y, String label, String price) {
+        this.fontRendererObj.drawString("§7" + label + ":", x, y, 0xFFFFFF);
+        int priceX = x + 100 - this.fontRendererObj.getStringWidth(price); // Alinha o preço à direita da coluna
+        this.fontRendererObj.drawString("§e" + price, priceX, y, 0xFFFFFF);
     }
 
     @Override
@@ -208,6 +324,16 @@ public class SkyTabMenuGui extends GuiScreen {
         int x = (screenW - menuW) / 2;
         int y = (screenH - menuH) / 2;
         int margin = 4;
+
+        // Lógica do clique no botão de CONFIGURAÇÕES (Comparador)
+        int settingsX = x + menuW - 25;
+        int settingsY = y + 10;
+        if (mouseX >= settingsX && mouseX <= settingsX + 20 && mouseY >= settingsY && mouseY <= settingsY + 20) {
+            mc.thePlayer.playSound("random.click", 1.0F, 1.0F);
+            // Abre a tela de configuração que o comando /skylake abriria
+            mc.displayGuiScreen(new com.galaxyhells.skylake.config.SkyLakeConfig());
+            return;
+        }
 
         int innerX = x + margin;
         int innerY = y + 40;
@@ -230,12 +356,19 @@ public class SkyTabMenuGui extends GuiScreen {
                     currentPage = 1;
                     mc.thePlayer.playSound("random.click", 1.0F, 1.0F);
                 }
+                // Clique no Botão 2 (Lista de Preços)
+                else if (mouseX >= innerX + btnW + gap && mouseX <= innerX + (btnW * 2) + gap) {
+                    currentPage = 2; // ABRE A ABA DE PREÇOS
+                    mc.thePlayer.playSound("random.click", 1.0F, 1.0F);
+                }
             }
             else if (currentPage == 1) {
-                int cols = 5;
+                int cols = 6; // Definido para 5 colunas
                 int spacing = 4;
+                // Cálculo exato para preencher a largura sem sobras
                 int btnW2 = (innerW - (spacing * (cols - 1))) / cols;
-                int btnH2 = 22;
+                int btnH2 = (innerW - (spacing * (cols - 1))) / cols;
+                btnH2 = (int)(btnH2 * 0.75);
 
                 for (int i = 0; i < WARPS_DATA.length; i++) {
                     int col = i % cols;

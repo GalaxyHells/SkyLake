@@ -101,7 +101,8 @@ public class RarityBackground {
 
         for (String line : tooltip) {
             String cleanLine = line.toUpperCase();
-            if (cleanLine.contains("ESPECIAL")) return 0x60FF55FF;
+            if (cleanLine.contains("ESPECIAL")) return 0xFFFF003F;
+            if (cleanLine.contains("MÍSTICA") || cleanLine.contains("MÍSTICO")) return 0x60FF55FF;
             if (cleanLine.contains("LENDÁRIO") || cleanLine.contains("LENDÁRIA")) return 0x60FFAA00;
             if (cleanLine.contains("ÉPICO") || cleanLine.contains("ÉPICA"))       return 0x60AA00AA;
             if (cleanLine.contains("RARO") || cleanLine.contains("RARA"))         return 0x605555FF;

@@ -10,6 +10,9 @@ public class ConfigHandler {
     private static final Properties props = new Properties();
     public static boolean rarityBackground = true;
     public static boolean statOverlay = true;
+    public static boolean mutantTimer = true;
+    public static boolean magmaTimer = true;
+    public static boolean mutantHighlight = true;
 
     public static boolean bossAlert = true;
 
@@ -39,6 +42,9 @@ public class ConfigHandler {
 
             rarityBackground = Boolean.parseBoolean(props.getProperty("rarityBackground", "true"));
             statOverlay = Boolean.parseBoolean(props.getProperty("statOverlay", "true"));
+            mutantTimer = Boolean.parseBoolean(props.getProperty("mutantTimer", "true"));
+            magmaTimer = Boolean.parseBoolean(props.getProperty("magmaTimer", "true"));
+            magmaTimer = Boolean.parseBoolean(props.getProperty("mutantHighlight", "true"));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -65,6 +71,9 @@ public class ConfigHandler {
 
             props.store(output, "SkyLake Configuration");
             props.setProperty("statOverlay", String.valueOf(statOverlay));
+            props.setProperty("mutantTimer", String.valueOf(mutantTimer));
+            props.setProperty("magmaTimer", String.valueOf(magmaTimer));
+            props.setProperty("mutantHighlight", String.valueOf(mutantHighlight));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

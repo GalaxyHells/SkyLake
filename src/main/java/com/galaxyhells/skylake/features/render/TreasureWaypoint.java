@@ -1,42 +1,46 @@
 package com.galaxyhells.skylake.features.render;
 
 import com.galaxyhells.skylake.utils.RenderUtils;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TreasureWaypoint {
 
-    // Instância única para o comando conseguir acessar
     public static final TreasureWaypoint INSTANCE = new TreasureWaypoint();
 
     private double targetX, targetY, targetZ;
     private boolean hasWaypoint = false;
-    private static final Pattern COORD_PATTERN = Pattern.compile("at (-?\\d+), (\\d+), (-?\\d+)");
 
-    // Método para limpar o ponto
+    // Adicionamos o "volatile" para garantir que a renderização veja a mudança feita pelo Tick
+    private volatile boolean shouldRender = false;
+
     public void clear() {
+        this.shouldRender = false;
         this.hasWaypoint = false;
     }
 
     @SubscribeEvent
-    public void onChat(ClientChatReceivedEvent event) {
-        String msg = event.message.getUnformattedText();
-        Matcher matcher = COORD_PATTERN.matcher(msg);
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        // Se não tiver alvo ou a renderização estiver desligada, sai fora
+        if (!shouldRender || !hasWaypoint) return;
 
-        if (matcher.find()) {
-            this.targetX = Double.parseDouble(matcher.group(1));
-            this.targetY = Double.parseDouble(matcher.group(2));
-            this.targetZ = Double.parseDouble(matcher.group(3));
-            this.hasWaypoint = true;
-        }
+        // Renderiza no centro do bloco (+0.5) para alinhar com a cabeça/armorstand
+        RenderUtils.drawCustomBox(targetX + 0.5, targetY + 1, targetZ + 0.5, 1.0f, 1.0f, 0xFF00FFFF);
     }
 
-    @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
-        if (!hasWaypoint) return;
-        RenderUtils.drawCustomBox(targetX, targetY, targetZ, 1.0f, 2.0f, 0xFF00FFFF);
+    public void setTarget(BlockPos pos) {
+        if (pos == null) {
+            this.clear();
+            return;
+        }
+
+        this.targetX = pos.getX();
+        this.targetY = pos.getY();
+        this.targetZ = pos.getZ();
+
+        this.hasWaypoint = true;
+        this.shouldRender = true; // Ativa a renderização explicitamente
     }
 }

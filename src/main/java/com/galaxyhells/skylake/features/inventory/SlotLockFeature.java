@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.galaxyhells.skylake.config.ConfigHandler.lockedSlots;
+import static com.galaxyhells.skylake.utils.KeybindManager.openMenuKey;
 
 public class SlotLockFeature {
 
@@ -41,7 +42,8 @@ public class SlotLockFeature {
         int slotIndex = hoveredSlot.getSlotIndex();
 
         // Se apertou "L"
-        if (Keyboard.getEventKey() == Keyboard.KEY_L && Keyboard.getEventKeyState()) {
+        //if (Keyboard.getEventKey() == Keyboard.KEY_L && Keyboard.getEventKeyState()) {
+        if (openMenuKey.isPressed()) {
             if (lockedSlots.contains(slotIndex)) {
                 lockedSlots.remove(slotIndex);
                 Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1.0F, 1.0F);
