@@ -1,46 +1,86 @@
 package com.galaxyhells.skylake.features.render;
 
 import com.galaxyhells.skylake.utils.RenderUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TreasureWaypoint {
 
     public static final TreasureWaypoint INSTANCE = new TreasureWaypoint();
 
-    private double targetX, targetY, targetZ;
-    private boolean hasWaypoint = false;
-
-    // Adicionamos o "volatile" para garantir que a renderização veja a mudança feita pelo Tick
+    // Agora armazenamos uma lista de pontos
+    private final List<BlockPos> targets = new ArrayList<>();
     private volatile boolean shouldRender = false;
 
     public void clear() {
+        synchronized (targets) {
+            this.targets.clear();
+        }
         this.shouldRender = false;
-        this.hasWaypoint = false;
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        // Se não tiver alvo ou a renderização estiver desligada, sai fora
-        if (!shouldRender || !hasWaypoint) return;
+        if (!shouldRender || targets.isEmpty()) return;
 
-        // Renderiza no centro do bloco (+0.5) para alinhar com a cabeça/armorstand
-        RenderUtils.drawCustomBox(targetX + 0.5, targetY + 1, targetZ + 0.5, 1.0f, 1.0f, 0xFF00FFFF);
+        synchronized (targets) {
+            for (BlockPos pos : targets) {
+                // Renderiza cada caixa.
+                // Dica: Use 0x5500FFFF (mais transparente) se forem muitos, para não poluir a visão
+                RenderUtils.drawCustomBox(
+                        pos.getX() + 0.5,
+                        pos.getY() + 1,
+                        pos.getZ() + 0.5,
+                        1.0f, 1.0f, 0xFF00FFFF
+                );
+            }
+        }
     }
 
+    // Define apenas um alvo (usado pela rota normal)
     public void setTarget(BlockPos pos) {
-        if (pos == null) {
-            this.clear();
-            return;
+        synchronized (targets) {
+            this.targets.clear();
+            if (pos != null) {
+                this.targets.add(pos);
+                this.shouldRender = true;
+            } else {
+                this.shouldRender = false;
+            }
         }
+    }
 
-        this.targetX = pos.getX();
-        this.targetY = pos.getY();
-        this.targetZ = pos.getZ();
+    // Define vários alvos ao mesmo tempo (Nova Função)
+    public void setMultipleTargets(List<BlockPos> positions) {
+        synchronized (targets) {
+            this.targets.clear();
+            if (positions != null && !positions.isEmpty()) {
+                this.targets.addAll(positions);
+                this.shouldRender = true;
+            } else {
+                this.shouldRender = false;
+            }
+        }
+    }
 
-        this.hasWaypoint = true;
-        this.shouldRender = true; // Ativa a renderização explicitamente
+    // Retorna a lista atual de alvos
+    public List<BlockPos> getTargets() {
+        synchronized (targets) {
+            return new ArrayList<>(targets);
+        }
+    }
+
+    // Remove apenas um alvo específico (apaga a caixa dele)
+    public void removeTarget(BlockPos pos) {
+        synchronized (targets) {
+            targets.remove(pos);
+            if (targets.isEmpty()) {
+                this.shouldRender = false;
+            }
+        }
     }
 }

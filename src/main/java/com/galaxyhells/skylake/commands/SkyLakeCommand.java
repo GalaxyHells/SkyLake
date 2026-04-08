@@ -42,7 +42,7 @@ public class SkyLakeCommand extends CommandBase {
         // --- SUBCOMANDO: GUIA ---
         if (args[0].equalsIgnoreCase("guia")) {
             if (args.length < 2) {
-                sender.addChatMessage(new ChatComponentText("§cUso: /skylake guia [tesouros/canarion/stop]"));
+                sender.addChatMessage(new ChatComponentText("§cUso: /skylake guia [tesouros/canarion/stop] <todos/ordem/reset>"));
                 return;
             }
 
@@ -54,22 +54,16 @@ public class SkyLakeCommand extends CommandBase {
                 return;
             }
 
-            // Identifica onde o player está para abrir a pasta certa
             String world = com.galaxyhells.skylake.utils.WorldUtils.getCurrentArea();
-            List<BlockPos> lista;
             String prefixoChat;
             String fileName;
 
-
-
             switch (sub) {
                 case "tesouros":
-                    // O nome do arquivo passa a ser apenas o nome do mundo (ex: vilarejo.json)
                     fileName = world + ".json";
                     prefixoChat = "[Baú do Tesouro]";
                     break;
                 case "canarion":
-                    // Se canarion seguir a mesma lógica de arquivos únicos:
                     fileName = world + "_canarion.json";
                     prefixoChat = "[Canárion - " + world.toUpperCase() + "]";
                     break;
@@ -78,23 +72,56 @@ public class SkyLakeCommand extends CommandBase {
                     return;
             }
 
-            lista = TreasureLogger.getCoordsFromFile(fileName);
-
-            if (lista.isEmpty()) {
-                sender.addChatMessage(new ChatComponentText("§c[SkyLake] Nenhuma coordenada encontrada em: §e" + world));
+            // --- LÓGICA DE RESET ---
+            if (args.length >= 3 && args[2].equalsIgnoreCase("reset")) {
+                TreasureLogger.resetCollected(fileName);
+                TreasureGui.INSTANCE.stopRoute();
+                sender.addChatMessage(new ChatComponentText("§b[SkyLake] §7Progresso de §e" + world + " (" + sub + ") §7foi resetado!"));
                 return;
             }
 
-            // Ordenação por proximidade
-            net.minecraft.entity.player.EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-//            lista.sort((p1, p2) -> {
-//                double d1 = player.getDistanceSq(p1.getX(), p1.getY(), p1.getZ());
-//                double d2 = player.getDistanceSq(p2.getX(), p2.getY(), p2.getZ());
-//                return Double.compare(d1, d2);
-//            });
+            // Carrega a lista original
+            List<BlockPos> lista = TreasureLogger.getCoordsFromFile(fileName);
 
-            TreasureGui.INSTANCE.startRoute(lista, prefixoChat);
-            sender.addChatMessage(new ChatComponentText("§b[SkyLake] §aGuia iniciado no mundo: §e" + world + " §7(" + lista.size() + " locais)"));
+            if (lista.isEmpty()) {
+                sender.addChatMessage(new ChatComponentText("§c[SkyLake] Nenhuma coordenada encontrada para: §e" + world));
+                return;
+            }
+
+            // --- FILTRAGEM DE COLETADOS ---
+            // Remove da lista o que já está salvo no arquivo _coletados.json
+            List<BlockPos> coletados = TreasureLogger.getCoordsFromFile(fileName.replace(".json", "_coletados.json"));
+            lista.removeIf(coletados::contains);
+
+            if (lista.isEmpty()) {
+                sender.addChatMessage(new ChatComponentText("§b[SkyLake] §aVocê já coletou todos os itens de: §e" + world));
+                return;
+            }
+
+            // --- ARGUMENTOS EXTRAS (todos / ordem) ---
+            if (args.length >= 3) {
+                String modo = args[2].toLowerCase();
+
+                if (modo.equals("todos") || modo.equals("all")) {
+                    // MUDANÇA AQUI: Agora passa a variável 'fileName' também!
+                    TreasureGui.INSTANCE.showAll(lista, fileName);
+                    return;
+                }
+
+                if (modo.equals("ordem") || modo.equals("sort")) {
+                    net.minecraft.entity.player.EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+                    lista.sort((p1, p2) -> {
+                        double d1 = player.getDistanceSq(p1.getX(), p1.getY(), p1.getZ());
+                        double d2 = player.getDistanceSq(p2.getX(), p2.getY(), p2.getZ());
+                        return Double.compare(d1, d2);
+                    });
+                    sender.addChatMessage(new ChatComponentText("§b[SkyLake] §7Lista reordenada por proximidade atual."));
+                }
+            }
+
+            // Inicia a rota passando o fileName para o TreasureGui poder salvar o progresso depois
+            TreasureGui.INSTANCE.startRoute(lista, prefixoChat, fileName);
+            sender.addChatMessage(new ChatComponentText("§b[SkyLake] §aGuia iniciado: §e" + world + " §7(" + lista.size() + " restantes)"));
             return;
         }
 
@@ -113,7 +140,6 @@ public class SkyLakeCommand extends CommandBase {
             }
         }
 
-        // Se não cair em nenhum comando acima
         sender.addChatMessage(new ChatComponentText("§cComando desconhecido. Use /skylake para abrir o menu."));
     }
 }

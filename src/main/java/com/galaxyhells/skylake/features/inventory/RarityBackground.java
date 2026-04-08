@@ -15,13 +15,19 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import java.util.List;
 
 public class RarityBackground {
+    
+    // Modos de renderização de raridade
+    public static int RENDER_MODE = 1; // 0 = Fundo completo, 1 = 2 pixels inferior
+    
+    public static final int RENDER_MODE_FULL = 0;
+    public static final int RENDER_MODE_BOTTOM_PIXELS = 1;
 
     /**
      * Este evento roda especificamente antes de cada slot ser desenhado.
      * É perfeito porque o que desenharmos aqui fica naturalmente ATRÁS do item.
      */
     @SubscribeEvent
-    public void onDrawSlot(GuiScreenEvent.DrawScreenEvent.Post event) {
+    public void onDrawSlot(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!com.galaxyhells.skylake.config.ConfigHandler.rarityBackground) return;
         if (!(event.gui instanceof GuiContainer)) return;
 
@@ -39,6 +45,7 @@ public class RarityBackground {
         // Habilita o que é necessário para a transparência e profundidade
         GlStateManager.enableBlend();
         GlStateManager.disableLighting();
+        //GlStateManager.disableDepth(); // Desativa depth test para renderização 2D
         GlStateManager.enableDepth(); // Crucial para não "vazar" para o fundo do mundo
 
         // O PULO DO GATO:
@@ -58,7 +65,7 @@ public class RarityBackground {
                 int y = guiTop + slot.yDisplayPosition;
 
                 // Desenha o fundo colorido
-                Gui.drawRect(x, y, x + 16, y + 16, color);
+                drawRarityBackground(x, y, color, RENDER_MODE);
             }
         }
 
@@ -88,7 +95,7 @@ public class RarityBackground {
                     // Desenha o fundo atrás do item da hotbar
 
                     // Usamos x+1 e y+1 para centralizar perfeitamente no quadradinho
-                    Gui.drawRect(x + 1, y + 1, x + 20, y + 20, color);
+                    drawRarityBackground(x + 1, y + 1, color, RENDER_MODE);
                 }
             }
         }
@@ -101,14 +108,40 @@ public class RarityBackground {
 
         for (String line : tooltip) {
             String cleanLine = line.toUpperCase();
-            if (cleanLine.contains("ESPECIAL")) return 0xFFFF003F;
-            if (cleanLine.contains("MÍSTICA") || cleanLine.contains("MÍSTICO")) return 0x60FF55FF;
-            if (cleanLine.contains("LENDÁRIO") || cleanLine.contains("LENDÁRIA")) return 0x60FFAA00;
-            if (cleanLine.contains("ÉPICO") || cleanLine.contains("ÉPICA"))       return 0x60AA00AA;
-            if (cleanLine.contains("RARO") || cleanLine.contains("RARA"))         return 0x605555FF;
-            if (cleanLine.contains("INCOMUM"))                                    return 0x6055FF55;
-            if (cleanLine.contains("COMUM"))                                      return 0x60FFFFFF;
+            if (cleanLine.contains("ESPECIAL")) return 0x70FF003F;
+            if (cleanLine.contains("MÍSTICA") || cleanLine.contains("MÍSTICO")) return 0x70FF55FF;
+            if (cleanLine.contains("LENDÁRIO") || cleanLine.contains("LENDÁRIA")) return 0x70FFAA00;
+            if (cleanLine.contains("ÉPICO") || cleanLine.contains("ÉPICA"))       return 0x70AA00AA;
+            if (cleanLine.contains("RARO") || cleanLine.contains("RARA"))         return 0x705555FF;
+            if (cleanLine.contains("INCOMUM"))                                    return 0x7055FF55;
+            if (cleanLine.contains("COMUM"))                                      return 0x70FFFFFF;
         }
         return 0;
+    }
+    
+    /**
+     * Desenha o fundo de raridade conforme o modo especificado
+     * @param x Posi��o X inicial
+     * @param y Posi��o Y inicial
+     * @param color Cor do fundo
+     * @param renderMode Modo de renderiza��o (RENDER_MODE_FULL ou RENDER_MODE_BOTTOM_PIXELS)
+     */
+    private void drawRarityBackground(int x, int y, int color, int renderMode) {
+        switch (renderMode) {
+            case RENDER_MODE_FULL:
+                // Modo original: fundo completo do slot
+                Gui.drawRect(x, y, x + 16, y + 16, color);
+                break;
+                
+            case RENDER_MODE_BOTTOM_PIXELS:
+                // Novo modo: apenas 2 pixels na parte inferior
+                Gui.drawRect(x, y + 14, x + 16, y + 16, color);
+                break;
+                
+            default:
+                // Fallback para modo completo
+                Gui.drawRect(x, y, x + 16, y + 16, color);
+                break;
+        }
     }
 }

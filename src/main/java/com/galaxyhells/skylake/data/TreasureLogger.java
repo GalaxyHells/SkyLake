@@ -4,6 +4,7 @@ import com.galaxyhells.skylake.utils.WorldUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -12,16 +13,24 @@ import java.util.*;
 public class TreasureLogger {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // Centralizamos os dados em uma pasta própria para não bagunçar a raiz da /config
-    private static final String BASE_PATH = "config/skylake/";
+    // Caminho atualizado - usar caminho relativo como ConfigHandler
+    private static final String BASE_PATH = "config/skylake/treasures/";
 
-    // Cache para evitar IO desnecessário e duplicatas na mesma sessão
     private static final Map<String, Set<String>> fileCache = new HashMap<>();
 
     /**
-     * Carrega coordenadas de um arquivo.
-     * O 'path' deve ser "nome_do_mundo/arquivo.json" (ex: "hub/skylake_treasures.json")
+     * NOVO MÉTODO: Garante que a pasta raiz do mod sempre exista.
+     * Retorna o objeto File da pasta 'treasures'.
      */
+    private static File getTreasuresDir() {
+        // Mudança: usar caminho relativo como ConfigHandler
+        File dir = new File(BASE_PATH);
+        if (!dir.exists()) {
+            dir.mkdirs(); // Cria as pastas config -> skylake -> treasures se não existirem
+        }
+        return dir;
+    }
+
     public static List<BlockPos> getCoordsFromFile(String path) {
         List<BlockPos> positions = new ArrayList<>();
         Set<String> coords = loadFileSet(path);
@@ -41,17 +50,10 @@ public class TreasureLogger {
         return positions;
     }
 
-    /**
-     * Salva uma nova coordenada detectando automaticamente o mundo atual.
-     */
     public static void log(BlockPos pos, String fileName) {
-        // Detecta o mundo atual (ex: "hub", "the_end", "vilarejo")
-        String world = WorldUtils.getCurrentArea();
-        String path = world + "/" + fileName;
-
+        String path = fileName;
         String coordKey = pos.getX() + "," + pos.getY() + "," + pos.getZ();
 
-        // O cache agora diferencia arquivos pelo caminho completo (mundo + nome)
         Set<String> currentCoords = fileCache.computeIfAbsent(path, k -> loadFileSet(path));
 
         if (!currentCoords.contains(coordKey)) {
@@ -60,9 +62,6 @@ public class TreasureLogger {
         }
     }
 
-    /**
-     * Sobrecarga padrão que usa o mundo atual e o nome de arquivo básico.
-     */
     public static void log(BlockPos pos) {
         log(pos, "skylake_treasures.json");
     }
@@ -70,8 +69,9 @@ public class TreasureLogger {
     private static Set<String> loadFileSet(String path) {
         Set<String> resultSet = new HashSet<>();
 
-        // 1. Tenta carregar do Config (Externo: config/skylake/mundo/arquivo.json)
-        File configFile = new File(BASE_PATH + path);
+        // Usa o getTreasuresDir() para garantir que a pasta existe antes de ler
+        File configFile = new File(getTreasuresDir(), path);
+
         if (configFile.exists()) {
             try (Reader reader = new FileReader(configFile)) {
                 Set<String> loaded = gson.fromJson(reader, new TypeToken<HashSet<String>>(){}.getType());
@@ -79,7 +79,6 @@ public class TreasureLogger {
             } catch (IOException e) { e.printStackTrace(); }
         }
 
-        // 2. Tenta carregar do JAR (Interno: assets/skylake/treasures/mundo/arquivo.json)
         try {
             InputStream is = TreasureLogger.class.getResourceAsStream("/assets/skylake/treasures/" + path);
             if (is != null) {
@@ -94,9 +93,8 @@ public class TreasureLogger {
     }
 
     private static void saveToFile(Set<String> coords, String path) {
-        File configFile = new File(BASE_PATH + path);
+        File configFile = new File(getTreasuresDir(), path);
         try {
-            // Cria a árvore de diretórios (ex: cria a pasta 'hub' se não existir)
             if (!configFile.getParentFile().exists()) {
                 configFile.getParentFile().mkdirs();
             }
@@ -108,14 +106,52 @@ public class TreasureLogger {
         }
     }
 
-    /**
-     * Limpa o arquivo de log do mundo atual
-     */
     public static void clearLog(String fileName) {
-        String world = WorldUtils.getCurrentArea();
-        String path = world + "/" + fileName;
+        fileCache.put(fileName, new HashSet<>());
+        saveToFile(new HashSet<>(), fileName);
+    }
 
-        fileCache.put(path, new HashSet<>());
-        saveToFile(new HashSet<>(), path);
+    public static void markAsCollected(String fileName, BlockPos pos) {
+        String collectedFile = fileName.replace(".json", "_coletados.json");
+        System.out.println("[SkyLake DEBUG] Tentando marcar como coletado: " + pos + " no arquivo: " + collectedFile);
+        
+        File treasuresDir = getTreasuresDir();
+        System.out.println("[SkyLake DEBUG] Diretório de tesouros: " + treasuresDir.getAbsolutePath());
+        System.out.println("[SkyLake DEBUG] Diretório existe: " + treasuresDir.exists());
+        
+        List<BlockPos> collected = getCoordsFromFile(collectedFile);
+        System.out.println("[SkyLake DEBUG] Coletados antes: " + collected.size());
+
+        if (!collected.contains(pos)) {
+            collected.add(pos);
+            saveCoordsToFile(collectedFile, collected);
+            System.out.println("[SkyLake DEBUG] Tesouro adicionado e salvo!");
+            
+            // Verificar se o arquivo foi criado
+            File savedFile = new File(treasuresDir, collectedFile);
+            System.out.println("[SkyLake DEBUG] Arquivo salvo existe: " + savedFile.exists());
+            System.out.println("[SkyLake DEBUG] Caminho completo: " + savedFile.getAbsolutePath());
+        } else {
+            System.out.println("[SkyLake DEBUG] Tesouro já estava na lista de coletados");
+        }
+    }
+
+    public static void resetCollected(String fileName) {
+        String collectedFile = fileName.replace(".json", "_coletados.json");
+        // Usa o getTreasuresDir()
+        File file = new File(getTreasuresDir(), collectedFile);
+        if (file.exists()) file.delete();
+    }
+
+    private static void saveCoordsToFile(String fileName, List<BlockPos> coords) {
+        // Usa o getTreasuresDir()
+        File file = new File(getTreasuresDir(), fileName);
+        try (FileWriter writer = new FileWriter(file)) {
+            List<String> stringCoords = new ArrayList<>();
+            for (BlockPos p : coords) stringCoords.add(p.getX() + "," + p.getY() + "," + p.getZ());
+            gson.toJson(stringCoords, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

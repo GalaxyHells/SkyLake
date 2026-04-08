@@ -11,27 +11,52 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class MutantHighlight {
 
+    private static final String MUTANT_NAME_TAG = "Mutante";
+    private static final String MUTANT_NAME_ALT = "MUTANTE";
+    private static final float HIGHLIGHT_HEIGHT = 3.0f;
+    private static final float HIGHLIGHT_WIDTH = 1.0f;
+    private static final float HIGHLIGHT_Y_OFFSET = 0.0f;
+    private static final int HIGHLIGHT_COLOR = 0xFFFF00FF;
+    
+    private Entity currentMutant = null;
+    private long lastCheckTime = 0;
+    private static final long CHECK_INTERVAL = 100;
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        // Verifica se a feature está ativa na config
-        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantHighlight) return;
+        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantHighlight) {
+            currentMutant = null;
+            return;
+        }
 
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.theWorld == null) return;
 
-        // Percorre as entidades carregadas para achar o Mutante
+        // Atualiza busca a cada 100ms
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastCheckTime >= CHECK_INTERVAL) {
+            lastCheckTime = currentTime;
+            updateMutantLocation(mc);
+        }
+        
+        // Renderiza a cada frame (não pisca!)
+        if (currentMutant != null && !currentMutant.isDead) {
+            renderHighlight(currentMutant, event.partialTicks);
+        }
+    }
+    
+    private void updateMutantLocation(Minecraft mc) {
+        currentMutant = null;
+        
         for (Entity entity : mc.theWorld.loadedEntityList) {
-
-            // 1. Procuramos pela ArmorStand com o nome correto
-            if (entity instanceof EntityArmorStand) {
-                String name = entity.getCustomNameTag();
-
-                if (name != null && name.contains("Enderman Mutante")) {
-
-                    // 2. Quando achamos a NameTag, desenhamos o destaque
-                    // O Mutante geralmente está logo abaixo ou na mesma posição da ArmorStand
-                    renderHighlight(entity, event.partialTicks);
-                }
+            String name = entity.getCustomNameTag();
+            if (name == null) continue;
+            
+            boolean isMutant = name.contains(MUTANT_NAME_TAG) || name.contains(MUTANT_NAME_ALT);
+            
+            if (isMutant && (entity instanceof EntityArmorStand || entity instanceof EntityEnderman)) {
+                currentMutant = entity;
+                return;
             }
         }
     }
@@ -42,19 +67,17 @@ public class MutantHighlight {
         double y = nameTag.lastTickPosY + (nameTag.posY - nameTag.lastTickPosY) * partialTicks;
         double z = nameTag.lastTickPosZ + (nameTag.posZ - nameTag.lastTickPosZ) * partialTicks;
 
-        // O Enderman Mutante é alto, então fazemos um box maior (ex: 3 blocos de altura)
+        // O Enderman Mutante é alto, então fazemos um box maior
         // Ajustamos o Y para descer um pouco, já que a NameTag fica acima da cabeça
-        float boxHeight = 3.0f;
-        float boxWidth = 1.0f;
-
-        // Renderiza um box roxo neon (0xFFFF00FF)
+        
+        // Renderiza o destaque do mutante
         RenderUtils.drawCustomBox(
                 x,
-                y - 2.5, // Ajuste para o box envolver o corpo do Enderman e não só a tag
+                y - HIGHLIGHT_Y_OFFSET,
                 z,
-                boxWidth,
-                boxHeight,
-                0xFFFF00FF
+                HIGHLIGHT_WIDTH,
+                HIGHLIGHT_HEIGHT,
+                HIGHLIGHT_COLOR
         );
     }
 }

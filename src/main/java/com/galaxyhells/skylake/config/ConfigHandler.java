@@ -8,13 +8,29 @@ import java.util.Set;
 public class ConfigHandler {
     private static final File configFile = new File("config/skylake.cfg");
     private static final Properties props = new Properties();
-    public static boolean rarityBackground = true;
-    public static boolean statOverlay = true;
-    public static boolean mutantTimer = true;
-    public static boolean magmaTimer = true;
-    public static boolean mutantHighlight = true;
-
-    public static boolean bossAlert = true;
+    private static final String CONFIG_HEADER = "SkyLake Configuration";
+    
+    // Valores padrão
+    private static final boolean DEFAULT_RARITY_BACKGROUND = true;
+    private static final boolean DEFAULT_STAT_OVERLAY = true;
+    private static final boolean DEFAULT_MUTANT_TIMER = true;
+    private static final boolean DEFAULT_MAGMA_TIMER = true;
+    private static final boolean DEFAULT_MUTANT_HIGHLIGHT = true;
+    private static final boolean DEFAULT_MUTANT_SPAWN_BOXES = true;
+    private static final boolean DEFAULT_BOSS_ALERT = true;
+    private static final boolean DEFAULT_AFK_FEATURE = true;
+    private static final boolean DEFAULT_FANCY_HUD = true;
+    
+    // Configurações públicas
+    public static boolean rarityBackground = DEFAULT_RARITY_BACKGROUND;
+    public static boolean statOverlay = DEFAULT_STAT_OVERLAY;
+    public static boolean mutantTimer = DEFAULT_MUTANT_TIMER;
+    public static boolean magmaTimer = DEFAULT_MAGMA_TIMER;
+    public static boolean mutantHighlight = DEFAULT_MUTANT_HIGHLIGHT;
+    public static boolean mutantSpawnBoxes = DEFAULT_MUTANT_SPAWN_BOXES;
+    public static boolean bossAlert = DEFAULT_BOSS_ALERT;
+    public static boolean afkFeature = DEFAULT_AFK_FEATURE;
+    public static boolean fancyHUD = DEFAULT_FANCY_HUD;
 
     // Lista global dos slots trancados
     public static final Set<Integer> lockedSlots = new HashSet<Integer>();
@@ -29,56 +45,126 @@ public class ConfigHandler {
         try {
             input = new FileInputStream(configFile);
             props.load(input);
-            bossAlert = Boolean.parseBoolean(props.getProperty("bossAlert", "true"));
+            
+            // Carrega configurações com valores padrão
+            bossAlert = parseBoolean(props.getProperty("bossAlert"), DEFAULT_BOSS_ALERT);
+            afkFeature = parseBoolean(props.getProperty("afkFeature"), DEFAULT_AFK_FEATURE);
+            rarityBackground = parseBoolean(props.getProperty("rarityBackground"), DEFAULT_RARITY_BACKGROUND);
+            statOverlay = parseBoolean(props.getProperty("statOverlay"), DEFAULT_STAT_OVERLAY);
+            mutantTimer = parseBoolean(props.getProperty("mutantTimer"), DEFAULT_MUTANT_TIMER);
+            magmaTimer = parseBoolean(props.getProperty("magmaTimer"), DEFAULT_MAGMA_TIMER);
+            mutantHighlight = parseBoolean(props.getProperty("mutantHighlight"), DEFAULT_MUTANT_HIGHLIGHT);
+            mutantSpawnBoxes = parseBoolean(props.getProperty("mutantSpawnBoxes"), DEFAULT_MUTANT_SPAWN_BOXES);
+            fancyHUD = parseBoolean(props.getProperty("fancyHUD"), DEFAULT_FANCY_HUD);
 
-            // Carrega os slots trancados
-            lockedSlots.clear();
-            String slotsString = props.getProperty("lockedSlots", "");
-            if (!slotsString.isEmpty()) {
-                for (String s : slotsString.split(",")) {
-                    try { lockedSlots.add(Integer.parseInt(s)); } catch (Exception ignored) {}
-                }
-            }
-
-            rarityBackground = Boolean.parseBoolean(props.getProperty("rarityBackground", "true"));
-            statOverlay = Boolean.parseBoolean(props.getProperty("statOverlay", "true"));
-            mutantTimer = Boolean.parseBoolean(props.getProperty("mutantTimer", "true"));
-            magmaTimer = Boolean.parseBoolean(props.getProperty("magmaTimer", "true"));
-            magmaTimer = Boolean.parseBoolean(props.getProperty("mutantHighlight", "true"));
+            // Carrega os slots trancados com validação
+            loadLockedSlots();
+            
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("[SkyLake] Erro ao carregar configuração: " + e.getMessage());
+            // Restaura valores padrão em caso de erro
+            restoreDefaults();
+        } catch (Exception e) {
+            System.err.println("[SkyLake] Erro inesperado ao carregar configuração: " + e.getMessage());
+            restoreDefaults();
         } finally {
-            if (input != null) {
-                try { input.close(); } catch (IOException e) { e.printStackTrace(); }
-            }
+            closeQuietly(input);
         }
     }
 
     public static void saveConfig() {
         OutputStream output = null;
         try {
-            output = new FileOutputStream(configFile);
-            props.setProperty("bossAlert", String.valueOf(bossAlert));
-
-            // Converte a lista de slots para um texto (ex: "0,1,8,")
-            StringBuilder sb = new StringBuilder();
-            for (Integer slot : lockedSlots) {
-                sb.append(slot).append(",");
+            // Garante que o diretório config exista
+            File configDir = configFile.getParentFile();
+            if (configDir != null && !configDir.exists()) {
+                configDir.mkdirs();
             }
-            props.setProperty("lockedSlots", sb.toString());
-
+            
+            output = new FileOutputStream(configFile);
+            
+            // Salva configurações
+            props.setProperty("bossAlert", String.valueOf(bossAlert));
+            props.setProperty("afkFeature", String.valueOf(afkFeature));
             props.setProperty("rarityBackground", String.valueOf(rarityBackground));
-
-            props.store(output, "SkyLake Configuration");
             props.setProperty("statOverlay", String.valueOf(statOverlay));
             props.setProperty("mutantTimer", String.valueOf(mutantTimer));
             props.setProperty("magmaTimer", String.valueOf(magmaTimer));
             props.setProperty("mutantHighlight", String.valueOf(mutantHighlight));
+            props.setProperty("mutantSpawnBoxes", String.valueOf(mutantSpawnBoxes));
+            props.setProperty("fancyHUD", String.valueOf(fancyHUD));
+
+            // Salva slots trancados
+            saveLockedSlots();
+
+            props.store(output, CONFIG_HEADER);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("[SkyLake] Erro ao salvar configuração: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("[SkyLake] Erro inesperado ao salvar configuração: " + e.getMessage());
         } finally {
-            if (output != null) {
-                try { output.close(); } catch (IOException e) { e.printStackTrace(); }
+            closeQuietly(output);
+        }
+    }
+    
+    // Métodos auxiliares
+    
+    private static boolean parseBoolean(String value, boolean defaultValue) {
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+    
+    private static void loadLockedSlots() {
+        lockedSlots.clear();
+        String slotsString = props.getProperty("lockedSlots", "");
+        if (!slotsString.isEmpty()) {
+            for (String s : slotsString.split(",")) {
+                try {
+                    int slot = Integer.parseInt(s.trim());
+                    if (slot >= 0 && slot <= 35) { // Validação: slots válidos de 0-35
+                        lockedSlots.add(slot);
+                    }
+                } catch (NumberFormatException ignored) {
+                    // Ignora valores inválidos
+                }
+            }
+        }
+    }
+    
+    private static void saveLockedSlots() {
+        StringBuilder sb = new StringBuilder();
+        for (Integer slot : lockedSlots) {
+            sb.append(slot).append(",");
+        }
+        props.setProperty("lockedSlots", sb.toString());
+    }
+    
+    private static void restoreDefaults() {
+        bossAlert = DEFAULT_BOSS_ALERT;
+        afkFeature = DEFAULT_AFK_FEATURE;
+        rarityBackground = DEFAULT_RARITY_BACKGROUND;
+        statOverlay = DEFAULT_STAT_OVERLAY;
+        mutantTimer = DEFAULT_MUTANT_TIMER;
+        magmaTimer = DEFAULT_MAGMA_TIMER;
+        mutantHighlight = DEFAULT_MUTANT_HIGHLIGHT;
+        mutantSpawnBoxes = DEFAULT_MUTANT_SPAWN_BOXES;
+        fancyHUD = DEFAULT_FANCY_HUD;
+
+        lockedSlots.clear();
+    }
+    
+    private static void closeQuietly(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                // Silenciosamente ignorado
             }
         }
     }

@@ -9,7 +9,7 @@ public class SkyLakeConfig extends GuiScreen {
     @Override
     public void initGui() {
         int x = this.width / 2 - 100;
-        int yStart = this.height / 2 - 40;
+        int yStart = this.height / 2 - 80;
 
         // Boss Alert
         this.buttonList.add(new GuiButton(1, x, yStart, 200, 20, getBossAlertText()));
@@ -26,8 +26,17 @@ public class SkyLakeConfig extends GuiScreen {
         // Magma Timer
         this.buttonList.add(new GuiButton(5, x, yStart + 100, 200, 20, getMagmaTimerText()));
 
-        // Magma Timer
+        // Mutant Highlight
         this.buttonList.add(new GuiButton(6, x, yStart + 125, 200, 20, getMutanthighlightText()));
+
+        // AFK Feature
+        this.buttonList.add(new GuiButton(7, x, yStart + 150, 200, 20, getAFKFeatureText()));
+
+        // Mutant Spawn Boxes
+        this.buttonList.add(new GuiButton(8, x, yStart + 175, 200, 20, getMutantSpawnBoxesText()));
+
+        // Fancy HUD
+        this.buttonList.add(new GuiButton(9, x, yStart + 200, 200, 20, getFancyHUDText()));
     }
 
     private String getBossAlertText() {
@@ -55,6 +64,18 @@ public class SkyLakeConfig extends GuiScreen {
         return "Destacar Enderman Mutante: " + (ConfigHandler.mutantHighlight ? "§aON" : "§cOFF");
     }
 
+    private String getAFKFeatureText() {
+        return "AFK Automático: " + (ConfigHandler.afkFeature ? "§aON" : "§cOFF");
+    }
+
+    private String getMutantSpawnBoxesText() {
+        return "Caixas de spawn do mutante: " + (ConfigHandler.mutantSpawnBoxes ? "§aON" : "§cOFF");
+    }
+
+    private String getFancyHUDText() {
+        return "HUD Maravilhosa: " + (ConfigHandler.fancyHUD ? "§aON" : "§cOFF");
+    }
+
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 1) {
@@ -76,6 +97,19 @@ public class SkyLakeConfig extends GuiScreen {
             // Alterna o display do Tempo pro Magma Boss
             ConfigHandler.magmaTimer = !ConfigHandler.magmaTimer;
             button.displayString = getMagmaTimerText();
+        } else if (button.id == 6) {
+            // Alterna o destaque do Enderman Mutante
+            ConfigHandler.mutantHighlight = !ConfigHandler.mutantHighlight;
+            button.displayString = getMutanthighlightText();
+        } else if (button.id == 7) {
+            ConfigHandler.afkFeature = !ConfigHandler.afkFeature;
+            button.displayString = getAFKFeatureText();
+        } else if (button.id == 8) {
+            ConfigHandler.mutantSpawnBoxes = !ConfigHandler.mutantSpawnBoxes;
+            button.displayString = getMutantSpawnBoxesText();
+        } else if (button.id == 9) {
+            ConfigHandler.fancyHUD = !ConfigHandler.fancyHUD;
+            button.displayString = getFancyHUDText();
         }
 
         // Salva qualquer alteração no arquivo

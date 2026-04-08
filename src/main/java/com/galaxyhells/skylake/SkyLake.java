@@ -3,10 +3,14 @@ package com.galaxyhells.skylake;
 import com.galaxyhells.skylake.commands.SkyLakeCommand;
 import com.galaxyhells.skylake.config.ConfigHandler;
 import com.galaxyhells.skylake.data.ItemDataManager;
+import com.galaxyhells.skylake.features.hud.AutoAFK;
+import com.galaxyhells.skylake.features.hud.FancyHUD;
 import com.galaxyhells.skylake.features.hud.StatOverlay;
 import com.galaxyhells.skylake.features.inventory.TooltipListener;
+import com.galaxyhells.skylake.features.render.TreasureClickHandler;
 import com.galaxyhells.skylake.features.render.TreasureGui;
 import com.galaxyhells.skylake.features.render.TreasureWaypoint;
+import com.galaxyhells.skylake.features.render.MutantSpawnBoxes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -34,6 +38,7 @@ public class SkyLake {
 
         // Registro do Comando
         ClientCommandHandler.instance.registerCommand(new SkyLakeCommand());
+        ClientCommandHandler.instance.registerCommand(new com.galaxyhells.skylake.commands.AnnounceCommand());
 
         // REGISTRO DO LISTENER
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.listener.ChatListener());
@@ -42,6 +47,7 @@ public class SkyLake {
         MinecraftForge.EVENT_BUS.register(TreasureWaypoint.INSTANCE);
 
         // Registro do feature:Guia Pirata (Tick e Chat)
+        MinecraftForge.EVENT_BUS.register(TreasureClickHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TreasureGui.INSTANCE);
         net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(TreasureGui.INSTANCE);
 
@@ -68,6 +74,18 @@ public class SkyLake {
 
         // Registro da feature: Mutant Highlight
         MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.render.MutantHighlight());
+
+        // Registro da feature: Auto AFK
+        MinecraftForge.EVENT_BUS.register(new AutoAFK());
+
+        // Registro da feature: Mutant Spawn Boxes
+        MinecraftForge.EVENT_BUS.register(MutantSpawnBoxes.INSTANCE);
+
+        // Registro da feature: Fancy Hotbar HUD
+        MinecraftForge.EVENT_BUS.register(new FancyHUD());
+        
+        // Registro da feature: Hotbar Hider (oculta hotbar padrão quando Fancy HUD ativa)
+        //MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.hud.HotbarHider());
 
         // 1. Registra a tecla visualmente nas opções de controles do Minecraft
         com.galaxyhells.skylake.utils.KeybindManager.register();

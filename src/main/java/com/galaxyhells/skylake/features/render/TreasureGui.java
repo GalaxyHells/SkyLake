@@ -1,5 +1,6 @@
 package com.galaxyhells.skylake.features.render;
 
+import com.galaxyhells.skylake.data.TreasureLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -17,9 +18,11 @@ public class TreasureGui {
     private int currentIndex = -1;
     private boolean isActive = false;
     private String chatRequirement = "";
+    private String currentFileName = "";
 
     // Carrega a lista organizada gerada
-    public void startRoute(List<BlockPos> sortedCoords, String chatRequirement) {
+    public void startRoute(List<BlockPos> sortedCoords, String chatRequirement, String fileName) {
+        this.currentFileName = fileName;
         this.route = sortedCoords;
         this.chatRequirement = chatRequirement; // Define o que procurar no chat
         this.currentIndex = 0;
@@ -74,6 +77,11 @@ public class TreasureGui {
     //if (msg.startsWith("[Canárion] Você achou um Presente do Canário!") || msg.startsWith("[Canárion] Parece que você já coletou este Presente do Canário.")) {
 
     private void markAsCollected() {
+        BlockPos collectedPos = route.get(currentIndex);
+
+        // SALVA NO ARQUIVO DE COLETADOS
+        TreasureLogger.markAsCollected(currentFileName, collectedPos);
+
         Minecraft.getMinecraft().thePlayer.addChatMessage(
                 new ChatComponentText("§b[SkyLake] §6Tesouro #" + (currentIndex + 1) + " coletado!")
         );
@@ -100,5 +108,64 @@ public class TreasureGui {
 
 
         );
+    }
+
+    /**
+     * Renderiza todos os pontos do arquivo sem iniciar uma rota de coleta.
+     */
+    public void showAll(List<BlockPos> allCoords, String fileName) {
+        this.stopRoute(); // Para qualquer rota ativa antes
+        this.isActive = false; // Garante que não vai escutar o tick/chat da rota normal
+        this.currentFileName = fileName; // Salva o nome do arquivo para gravarmos os cliques!
+
+        TreasureWaypoint.INSTANCE.setMultipleTargets(allCoords);
+        Minecraft.getMinecraft().thePlayer.addChatMessage(
+                new ChatComponentText("§b[SkyLake] §aMostrando " + allCoords.size() + " tesouros não coletados!")
+        );
+    }
+
+    // ================= EVENTOS DE CLIQUE ================= //
+
+    // Se você clicar com o botão direito num bloco
+    @SubscribeEvent
+    public void onPlayerInteract(net.minecraftforge.event.entity.player.PlayerInteractEvent event) {
+        if (event.action == net.minecraftforge.event.entity.player.PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+            checkAndCollect(event.pos);
+        }
+    }
+
+    // Se você clicar com o botão direito numa entidade (ex: ArmorStand de tesouro pirata)
+    @SubscribeEvent
+    public void onEntityInteract(net.minecraftforge.event.entity.player.EntityInteractEvent event) {
+        if (event.target != null) {
+            checkAndCollect(event.target.getPosition());
+        }
+    }
+
+    // Lógica que verifica se você clicou num tesouro marcado
+    private void checkAndCollect(BlockPos clickPos) {
+        // Se não tiver nenhum arquivo de guia "Todos" rodando, ignora
+        if (this.currentFileName == null || this.currentFileName.isEmpty()) return;
+
+        List<BlockPos> targets = TreasureWaypoint.INSTANCE.getTargets();
+        BlockPos toRemove = null;
+
+        for (BlockPos target : targets) {
+            // Verifica se o bloco clicado é o tesouro ou está muito perto (raio de 2 blocos)
+            // Isso evita bugs caso a entidade esteja levemente fora do centro do bloco
+            if (target.distanceSq(clickPos) <= 4.0) {
+                toRemove = target;
+                break;
+            }
+        }
+
+        // Se achou o tesouro no clique, remove a caixa e salva no JSON
+        if (toRemove != null) {
+            TreasureWaypoint.INSTANCE.removeTarget(toRemove);
+            TreasureLogger.markAsCollected(this.currentFileName, toRemove);
+            Minecraft.getMinecraft().thePlayer.addChatMessage(
+                    new ChatComponentText("§b[SkyLake] §aTesouro coletado e salvo!")
+            );
+        }
     }
 }
