@@ -52,7 +52,7 @@ public class TreasureGui {
     public void onTick(TickEvent.ClientTickEvent event) {
         if (!isActive || currentIndex >= route.size() || event.phase != TickEvent.Phase.START) return;
 
-        // Renderiza o Waypoint da coordenada atual usando seu RenderUtils
+        // Renderiza o Waypoint da coordenada atual usando seu RenderUtils2
         BlockPos current = route.get(currentIndex);
         // Aqui você usa a lógica que já funciona no seu mod para mostrar o "X" ou Box
         TreasureWaypoint.INSTANCE.setTarget(current);

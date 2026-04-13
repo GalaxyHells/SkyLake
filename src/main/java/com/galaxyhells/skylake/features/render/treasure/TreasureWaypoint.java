@@ -1,6 +1,6 @@
 package com.galaxyhells.skylake.features.render.treasure;
 
-import com.galaxyhells.skylake.utils.RenderUtils;
+import com.galaxyhells.skylake.utils.RenderUtils2;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -31,7 +31,7 @@ public class TreasureWaypoint {
             for (BlockPos pos : targets) {
                 // Renderiza cada caixa.
                 // Dica: Use 0x5500FFFF (mais transparente) se forem muitos, para não poluir a visão
-                RenderUtils.drawCustomBox(
+                RenderUtils2.drawCustomBox(
                         pos.getX() + 0.5,
                         pos.getY() + 1,
                         pos.getZ() + 0.5,

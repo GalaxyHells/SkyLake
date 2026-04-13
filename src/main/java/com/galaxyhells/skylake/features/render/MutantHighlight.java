@@ -1,11 +1,10 @@
 package com.galaxyhells.skylake.features.render;
 
-import com.galaxyhells.skylake.utils.RenderUtils;
+import com.galaxyhells.skylake.utils.RenderUtils2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -77,7 +76,7 @@ public class MutantHighlight {
         // Ajustamos o Y para descer um pouco, já que a NameTag fica acima da cabeça
         
         // Renderiza o destaque do mutante
-        RenderUtils.drawCustomBox(
+        RenderUtils2.drawCustomBox(
                 x,
                 y - HIGHLIGHT_Y_OFFSET,
                 z,
