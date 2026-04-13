@@ -2,8 +2,8 @@ package com.galaxyhells.skylake.commands;
 
 import com.galaxyhells.skylake.config.SkyLakeConfig;
 import com.galaxyhells.skylake.data.TreasureLogger;
-import com.galaxyhells.skylake.features.render.TreasureGui;
-import com.galaxyhells.skylake.features.render.TreasureWaypoint;
+import com.galaxyhells.skylake.features.render.treasure.TreasureGui;
+import com.galaxyhells.skylake.features.render.treasure.TreasureWaypoint;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

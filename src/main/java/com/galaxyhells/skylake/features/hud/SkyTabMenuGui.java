@@ -112,66 +112,75 @@ public class SkyTabMenuGui extends GuiScreen {
         }
         else if (currentPage == 2) {
             // PÁGINA DE PREÇOS - DADOS REAIS DO REDECANARY
-            int colGap = 6; // Espaçamento mínimo entre colunas
-            int colW = ((innerW - (colGap * 3)) / 4); // 4 colunas ajustadas
+            int colGap = 4; // Espaçamento mínimo entre colunas
+            int colW = ((innerW - (colGap * 2)) / 3); // 3 colunas com largura máxima
             int curY = innerY;
             int spacing = 10;
             int smallSpacing = 8;
             
-            // --- COLUNA 1: DRAGÕES & MINIONS ---
-            drawCategoryTitle(innerX, curY, "§c§lDragões & Minions");
+            // --- COLUNA 1: SET DRAGÃO ---
+            drawCategoryTitle(innerX, curY, "§c§lSet Dragão");
+            curY += 12;
+            
+            // Cabeçalho da tabela
+            this.fontRendererObj.drawStringWithShadow("§6§lSet      Capacete   Peitoral    Calça     Botas     Total", innerX, curY, 0xFFFFFF); curY += spacing;
+            
+            // Linha separadora
+            Gui.drawRect(innerX, curY, innerX + colW, curY + 1, 0x50FFFFFF); curY += smallSpacing;
+            
+            // Sets do Dragão - Formato organizado
+            this.fontRendererObj.drawStringWithShadow("§eSuperior  §e41.5kk    §e66.4kk    §e58.1kk    §e33.2kk   §e200kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
+            this.fontRendererObj.drawStringWithShadow("§cForte     §c7.5kk     §c12.0kk    §c10.5kk    §c6.0kk    §c36kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
+            this.fontRendererObj.drawStringWithShadow("§5Instável   §56.25kk    §510.0kk    §58.75kk    §55.0kk    §530kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
+            this.fontRendererObj.drawStringWithShadow("§aJovem     §a4.15kk    §a6.64kk    §a5.81kk    §a3.32kk   §a20kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
+            this.fontRendererObj.drawStringWithShadow("§9Sábio     §93.12kk    §95.0kk     §94.37kk    §92.5kk    §915kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
+            this.fontRendererObj.drawStringWithShadow("§7Ancião    §72.05kk    §73.28kk    §72.87kk    §71.64kk   §710kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
+            this.fontRendererObj.drawStringWithShadow("§bProtetor  §b1.65kk    §b2.64kk    §b2.31kk    §b1.32kk   §b8kk", innerX, curY, 0xFFFFFF); curY += spacing;
+            
+            // --- COLUNA 2: DRAGÕES & MINIONS ---
+            int col2X = innerX + colW + colGap;
+            curY = innerY;
+            drawCategoryTitle(col2X, curY, "§5§lDragões & Minions");
             curY += 12;
             
             // Dragões
-            drawPriceLine(innerX, curY, "§5Pedra do Dragão", "§e5kk"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§5AOTD", "§e25kk"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§5Garra do Dragão", "§e3kk"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§5Pet Dragão", "§7???"); curY += spacing + 2;
+            drawPriceLine(col2X, curY, "§5Pedra do Dragão", "§e5kk"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§5AOTD", "§e25kk"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§5Garra do Dragão", "§e3kk"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§5Pet Dragão", "§7???"); curY += spacing + 2;
             
             // Minions
-            drawCategoryTitle(innerX, curY, "§e§lItens de Minions");
+            drawCategoryTitle(col2X, curY, "§e§lItens de Minions");
             curY += 12;
-            drawPriceLine(innerX, curY, "§7Balde Lava", "§e300k"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Balde Lava Enc", "§e500k"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Balde de Magma", "§e1.2kk"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Compactador", "§e10k"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Super Compactador", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Depósito Pequeno", "§e500 c"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Depósito Médio", "§e10k"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Depósito Grande", "§e300k"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Catalisador", "§e30k"); curY += smallSpacing;
-            drawPriceLine(innerX, curY, "§7Fornalha de Fundição", "§e500 c"); curY += spacing;
+            drawPriceLine(col2X, curY, "§7Balde Lava", "§e300k"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Balde Lava Enc", "§e500k"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Balde de Magma", "§e1.2kk"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Compactador", "§e10k"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Super Compactador", "§e1kk"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Depósito Pequeno", "§e500 c"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Depósito Médio", "§e10k"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Depósito Grande", "§e300k"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Catalisador", "§e30k"); curY += smallSpacing;
+            drawPriceLine(col2X, curY, "§7Fornalha de Fundição", "§e500 c"); curY += spacing;
             
-            // --- COLUNA 2: MINI JARDIM ---
-            int col2X = innerX + colW + colGap;
+            // --- COLUNA 3: MINI JARDIM & ARMADURAS ---
+            int col3X = col2X + colW + colGap;
             curY = innerY;
-            drawCategoryTitle(col2X, curY, "§a§lMini Jardim");
+            drawCategoryTitle(col3X, curY, "§a§lMini Jardim");
             curY += 12;
             
             // Livros
-            drawPriceLine(col2X, curY, "§2Livro Hiper Nv 5", "§e750k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2 Batata Quente", "§e220k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2 Cenoura Quente", "§e350k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Enxada Polinizada", "§e1.8kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Livro Hidromel 5", "§e7.5kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Salada de Frutas", "§e600k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Buquê de Flores", "§e850k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Cristal Iluminado", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Colar de Girassol", "§e1.2kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Dente de Leão", "§e2kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§2Recombinador", "§e18.75kk"); curY += spacing + 2;
-            
-            // --- COLUNA 3: HORTALIÇAS & ARMADURAS ---
-            int col3X = col2X + colW + colGap;
-            curY = innerY;
-            drawCategoryTitle(col3X, curY, "§6§lDrops & Armaduras");
-            curY += 12;
-            
-            // Drops
-            drawPriceLine(col3X, curY, "§eAdubo (pack)", "§e400k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§eAdubo (unidade)", "§e6.25k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§eRaiz (pack)", "§e38.4kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§eRaiz (unidade)", "§e600k"); curY += spacing + 2;
+            drawPriceLine(col3X, curY, "§2Livro Hiper Nv 5", "§e750k"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2 Batata Quente", "§e220k"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2 Cenoura Quente", "§e350k"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Enxada Polinizada", "§e1.8kk"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Livro Hidromel 5", "§e7.5kk"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Salada de Frutas", "§e600k"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Buquê de Flores", "§e850k"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Cristal Iluminado", "§e1kk"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Colar de Girassol", "§e1.2kk"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Dente de Leão", "§e2kk"); curY += smallSpacing;
+            drawPriceLine(col3X, curY, "§2Recombinador", "§e18.75kk"); curY += spacing + 2;
             
             // Armaduras Herbalismo
             drawCategoryTitle(col3X, curY, "§2§lArmaduras");
@@ -180,24 +189,6 @@ public class SkyTabMenuGui extends GuiScreen {
             drawPriceLine(col3X, curY, "§2Set Broto", "§e1kk"); curY += smallSpacing;
             drawPriceLine(col3X, curY, "§2Set Raiz", "§e8.2kk"); curY += smallSpacing;
             drawPriceLine(col3X, curY, "§2Set Sol", "§e51.4kk"); curY += spacing;
-            
-            // --- COLUNA 4: ARCOS & ESPADAS ---
-            int col4X = col3X + colW + colGap;
-            curY = innerY;
-            drawCategoryTitle(col4X, curY, "§b§lArcos & Espadas");
-            curY += 12;
-            
-            // Arcos
-            drawPriceLine(col4X, curY, "§9Apollo", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(col4X, curY, "§9Furação", "§e600k"); curY += spacing + 2;
-            
-            // Espadas
-            drawCategoryTitle(col4X, curY, "§c§lEspadas");
-            curY += 12;
-            drawPriceLine(col4X, curY, "§cPigman", "§e15kk"); curY += smallSpacing;
-            drawPriceLine(col4X, curY, "§cAspecto do Fim", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(col4X, curY, "§cEspada do Golem", "§e400k"); curY += smallSpacing;
-            drawPriceLine(col4X, curY, "§cEspada Saltitante", "§e10kk"); curY += spacing;
             
             // Notas
             int footerY = y + menuH - 25;

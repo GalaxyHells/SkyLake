@@ -9,7 +9,7 @@ public class SkyLakeConfig extends GuiScreen {
     @Override
     public void initGui() {
         int x = this.width / 2 - 100;
-        int yStart = this.height / 2 - 80;
+        int yStart = this.height / 2 - 120;
 
         // Boss Alert
         this.buttonList.add(new GuiButton(1, x, yStart, 200, 20, getBossAlertText()));
@@ -37,6 +37,18 @@ public class SkyLakeConfig extends GuiScreen {
 
         // Fancy HUD
         this.buttonList.add(new GuiButton(9, x, yStart + 200, 200, 20, getFancyHUDText()));
+
+        // Map Feature
+        this.buttonList.add(new GuiButton(10, x, yStart + 225, 200, 20, getMapFeatureText()));
+
+        // Fancy Stat Overlay
+        this.buttonList.add(new GuiButton(11, x, yStart + 250, 200, 20, getFancyStatOverlayText()));
+
+        // Auto Sprint
+        this.buttonList.add(new GuiButton(12, x, yStart + 275, 200, 20, getAutoSprintText()));
+
+        // Auto Login
+        this.buttonList.add(new GuiButton(13, x, yStart + 300, 200, 20, getAutoLoginText()));
     }
 
     private String getBossAlertText() {
@@ -65,6 +77,7 @@ public class SkyLakeConfig extends GuiScreen {
     }
 
     private String getAFKFeatureText() {
+
         return "AFK Automático: " + (ConfigHandler.afkFeature ? "§aON" : "§cOFF");
     }
 
@@ -74,6 +87,22 @@ public class SkyLakeConfig extends GuiScreen {
 
     private String getFancyHUDText() {
         return "HUD Maravilhosa: " + (ConfigHandler.fancyHUD ? "§aON" : "§cOFF");
+    }
+
+    private String getMapFeatureText() {
+        return "Mapa (Tecla M): " + (ConfigHandler.mapFeature ? "§aON" : "§cOFF");
+    }
+
+    private String getFancyStatOverlayText() {
+        return "Stat Maravilhoso: " + (ConfigHandler.fancyStatOverlay ? "§aON" : "§cOFF");
+    }
+
+    private String getAutoSprintText() {
+        return "Auto Sprint: " + (ConfigHandler.autoSprint ? "§aON" : "§cOFF");
+    }
+
+    private String getAutoLoginText() {
+        return "Auto Login: " + (ConfigHandler.autoLogin ? "§aON" : "§cOFF");
     }
 
     @Override
@@ -110,6 +139,18 @@ public class SkyLakeConfig extends GuiScreen {
         } else if (button.id == 9) {
             ConfigHandler.fancyHUD = !ConfigHandler.fancyHUD;
             button.displayString = getFancyHUDText();
+        } else if (button.id == 10) {
+            ConfigHandler.mapFeature = !ConfigHandler.mapFeature;
+            button.displayString = getMapFeatureText();
+        } else if (button.id == 11) {
+            ConfigHandler.fancyStatOverlay = !ConfigHandler.fancyStatOverlay;
+            button.displayString = getFancyStatOverlayText();
+        } else if (button.id == 12) {
+            ConfigHandler.autoSprint = !ConfigHandler.autoSprint;
+            button.displayString = getAutoSprintText();
+        } else if (button.id == 13) {
+            ConfigHandler.autoLogin = !ConfigHandler.autoLogin;
+            button.displayString = getAutoLoginText();
         }
 
         // Salva qualquer alteração no arquivo

@@ -20,6 +20,10 @@ public class ConfigHandler {
     private static final boolean DEFAULT_BOSS_ALERT = true;
     private static final boolean DEFAULT_AFK_FEATURE = true;
     private static final boolean DEFAULT_FANCY_HUD = true;
+    private static final boolean DEFAULT_MAP_FEATURE = true;
+    private static final boolean DEFAULT_FANCY_STAT_OVERLAY = true;
+    private static final boolean DEFAULT_AUTO_SPRINT_FEATURE = true;
+    private static final boolean DEFAULT_AUTO_LOGIN_FEATURE = true;
     
     // Configurações públicas
     public static boolean rarityBackground = DEFAULT_RARITY_BACKGROUND;
@@ -31,6 +35,10 @@ public class ConfigHandler {
     public static boolean bossAlert = DEFAULT_BOSS_ALERT;
     public static boolean afkFeature = DEFAULT_AFK_FEATURE;
     public static boolean fancyHUD = DEFAULT_FANCY_HUD;
+    public static boolean mapFeature = DEFAULT_MAP_FEATURE;
+    public static boolean fancyStatOverlay = DEFAULT_FANCY_STAT_OVERLAY;
+    public static boolean autoSprint = DEFAULT_AUTO_SPRINT_FEATURE;
+    public static boolean autoLogin = DEFAULT_AUTO_LOGIN_FEATURE;
 
     // Lista global dos slots trancados
     public static final Set<Integer> lockedSlots = new HashSet<Integer>();
@@ -56,6 +64,10 @@ public class ConfigHandler {
             mutantHighlight = parseBoolean(props.getProperty("mutantHighlight"), DEFAULT_MUTANT_HIGHLIGHT);
             mutantSpawnBoxes = parseBoolean(props.getProperty("mutantSpawnBoxes"), DEFAULT_MUTANT_SPAWN_BOXES);
             fancyHUD = parseBoolean(props.getProperty("fancyHUD"), DEFAULT_FANCY_HUD);
+            mapFeature = parseBoolean(props.getProperty("mapFeature"), DEFAULT_MAP_FEATURE);
+            fancyStatOverlay = parseBoolean(props.getProperty("fancyStatOverlay"), DEFAULT_FANCY_STAT_OVERLAY);
+            autoSprint = parseBoolean(props.getProperty("autoSprintFeature"), DEFAULT_AUTO_SPRINT_FEATURE);
+            autoLogin = parseBoolean(props.getProperty("autoLoginFeature"), DEFAULT_AUTO_LOGIN_FEATURE);
 
             // Carrega os slots trancados com validação
             loadLockedSlots();
@@ -93,6 +105,10 @@ public class ConfigHandler {
             props.setProperty("mutantHighlight", String.valueOf(mutantHighlight));
             props.setProperty("mutantSpawnBoxes", String.valueOf(mutantSpawnBoxes));
             props.setProperty("fancyHUD", String.valueOf(fancyHUD));
+            props.setProperty("mapFeature", String.valueOf(mapFeature));
+            props.setProperty("fancyStatOverlay", String.valueOf(fancyStatOverlay));
+            props.setProperty("autoSprintFeature", String.valueOf(autoSprint));
+            props.setProperty("autoLoginFeature", String.valueOf(autoLogin));
 
             // Salva slots trancados
             saveLockedSlots();
@@ -155,6 +171,10 @@ public class ConfigHandler {
         mutantHighlight = DEFAULT_MUTANT_HIGHLIGHT;
         mutantSpawnBoxes = DEFAULT_MUTANT_SPAWN_BOXES;
         fancyHUD = DEFAULT_FANCY_HUD;
+        mapFeature = DEFAULT_MAP_FEATURE;
+        fancyStatOverlay = DEFAULT_FANCY_STAT_OVERLAY;
+        autoSprint = DEFAULT_AUTO_SPRINT_FEATURE;
+        autoLogin = DEFAULT_AUTO_LOGIN_FEATURE;
 
         lockedSlots.clear();
     }

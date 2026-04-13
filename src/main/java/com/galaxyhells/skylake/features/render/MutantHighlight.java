@@ -21,6 +21,12 @@ public class MutantHighlight {
     private Entity currentMutant = null;
     private long lastCheckTime = 0;
     private static final long CHECK_INTERVAL = 100;
+    
+    private static MutantHighlight instance;
+    
+    public MutantHighlight() {
+        instance = this;
+    }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
@@ -79,5 +85,19 @@ public class MutantHighlight {
                 HIGHLIGHT_HEIGHT,
                 HIGHLIGHT_COLOR
         );
+    }
+    
+    /**
+     * Força uma verificação imediata do mutante.
+     * Chamado quando detectado spawn no chat para highlight instantâneo.
+     */
+    public static void forceCheck() {
+        if (instance != null) {
+            Minecraft mc = Minecraft.getMinecraft();
+            if (mc.theWorld != null) {
+                instance.updateMutantLocation(mc);
+                instance.lastCheckTime = System.currentTimeMillis();
+            }
+        }
     }
 }

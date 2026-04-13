@@ -1,6 +1,7 @@
 package com.galaxyhells.skylake.listener;
 
 import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.features.render.MutantHighlight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -22,6 +23,9 @@ public class ChatListener {
             this.displayMessage = "§c§lBOSS DETECTADO!";
             this.displayTime = System.currentTimeMillis(); // Marca o tempo inicial
             Minecraft.getMinecraft().thePlayer.playSound("note.pling", 1.0F, 1.0F);
+            
+            // Força verificação imediata do mutante
+            MutantHighlight.forceCheck();
         }
     }
 

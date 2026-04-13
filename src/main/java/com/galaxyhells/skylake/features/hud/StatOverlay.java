@@ -49,7 +49,7 @@ public class StatOverlay {
         int screenWidth = sr.getScaledWidth();
         int screenHeight = sr.getScaledHeight();
 
-        if (!ConfigHandler.fancyHUD) {
+        if (!ConfigHandler.fancyStatOverlay) {
             // Posições base (em cima de onde seriam os corações e fome)
             int xHP = screenWidth / 2 - 91;
             int xMana = screenWidth / 2 + 10;

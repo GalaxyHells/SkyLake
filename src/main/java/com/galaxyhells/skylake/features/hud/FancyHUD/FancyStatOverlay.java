@@ -1,0 +1,414 @@
+package com.galaxyhells.skylake.features.hud.FancyHUD;
+
+import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.utils.ActionbarParser;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.Color;
+
+public class FancyStatOverlay {
+    
+    private static final int HUD_X_OFFSET = 10;
+    private static final int HUD_Y_OFFSET = 10;
+    private static final int HEAD_SIZE = 40;
+    private static final int BAR_WIDTH = 80;
+    private static final int BAR_HEIGHT = 10;
+    private static final int BAR_SPACING = 2;
+    private static final int CURRENCY_ICON_SIZE = 8;
+    
+    private final Minecraft mc = Minecraft.getMinecraft();
+    
+    @SubscribeEvent
+    public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) {
+            return;
+        }
+
+        if (!ConfigHandler.fancyStatOverlay) return;
+        
+        if (mc.gameSettings.showDebugInfo) {
+            return;
+        }
+        
+        if (mc.currentScreen != null) {
+            //return;
+        }
+        
+        renderStatOverlay();
+    }
+    
+    private void renderStatOverlay() {
+        if (mc.thePlayer == null) {
+            return;
+        }
+        
+        ScaledResolution sr = new ScaledResolution(mc);
+        int baseX = HUD_X_OFFSET;
+        int baseY = HUD_Y_OFFSET;
+        
+        // Renderizar cabeça do jogador
+        renderPlayerHead(baseX, baseY);
+        
+        // Renderizar nível do jogador
+        renderPlayerLevel(baseX, baseY);
+        
+        // Renderizar barras de status
+        int barsX = baseX + HEAD_SIZE + 4;
+        renderHealthBar(barsX, baseY);
+        renderManaBar(barsX, baseY + BAR_HEIGHT + BAR_SPACING);
+        renderExperienceBar(barsX, baseY + (BAR_HEIGHT + BAR_SPACING) * 2);
+        
+        // Renderizar moedas
+        int currencyY = baseY + HEAD_SIZE + 10;
+        renderRegularCurrency(baseX, currencyY);
+        renderPremiumCurrency(baseX, currencyY + CURRENCY_ICON_SIZE + 4);
+    }
+    
+    private void renderPlayerHead(int x, int y) {
+        if (mc.thePlayer == null) {
+            return;
+        }
+
+        // Renderizar a cabeça do jogador com estados OpenGL corretos
+        GlStateManager.pushMatrix();
+        
+        // Limpar estados anteriores que podem causar problemas de cor
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        
+        try {
+            // Usar o skin do jogador
+            ResourceLocation skinLocation = mc.thePlayer.getLocationSkin();
+            mc.getTextureManager().bindTexture(skinLocation);
+
+            // Desenhar a cabeça (8x8 pixels da skin, escalados para HEAD_SIZE)
+            Gui.drawScaledCustomSizeModalRect(x, y, 8, 8, 8, 8, HEAD_SIZE, HEAD_SIZE, 64, 64);
+
+            // Desenhar o chapéu/camada extra (40x8 pixels da skin)
+            Gui.drawScaledCustomSizeModalRect(x, y, 40, 8, 8, 8, HEAD_SIZE, HEAD_SIZE, 64, 64);
+
+        } catch (Exception e) {
+            // Em caso de erro, desenhar um quadrado padrão
+            GlStateManager.disableTexture2D();
+            drawRect(x, y, HEAD_SIZE, HEAD_SIZE, new Color(100, 100, 100, 200));
+            GlStateManager.enableTexture2D();
+        }
+        
+        GlStateManager.popMatrix();
+        GlStateManager.disableBlend();
+        
+        // Desenhar borda separadamente
+        renderHeadBorder(x, y);
+    }
+    
+    private void renderHeadBorder(int x, int y) {
+        // Desenhar borda muito sutil e clara
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        
+        // Cor muito clara e sutil para a borda
+        Color borderColor = new Color(20, 20, 20, 255);
+        GlStateManager.color(borderColor.getRed() / 255.0f, borderColor.getGreen() / 255.0f, 
+                           borderColor.getBlue() / 255.0f, borderColor.getAlpha() / 255.0f);
+        
+        // Desenhar borda com 1 pixel de espessura
+        Gui.drawRect(x, y, x + HEAD_SIZE, y + 1, borderColor.getRGB()); // superior
+        Gui.drawRect(x, y + HEAD_SIZE - 1, x + HEAD_SIZE, y + HEAD_SIZE, borderColor.getRGB()); // inferior
+        Gui.drawRect(x, y, x + 1, y + HEAD_SIZE, borderColor.getRGB()); // esquerda
+        Gui.drawRect(x + HEAD_SIZE - 1, y, x + HEAD_SIZE, y + HEAD_SIZE, borderColor.getRGB()); // direita
+        
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+    }
+    
+    private void renderPlayerLevel(int x, int y) {
+        if (mc.thePlayer == null) {
+            return;
+        }
+        
+        int level = mc.thePlayer.experienceLevel;
+        String levelText = String.valueOf(level);
+        
+        // Dimensões do quadrado do nível
+        int levelBoxSizeX = 12;
+        int levelBoxSizeY = 8;
+        int levelBoxX = x + HEAD_SIZE - levelBoxSizeX - 1;
+        int levelBoxY = y + HEAD_SIZE - levelBoxSizeY - 1;
+        
+        // Desenhar quadrado preto sem borda para o nível
+        drawRect(levelBoxX, levelBoxY, levelBoxSizeX, levelBoxSizeY, new Color(0, 0, 0, 200));
+        
+        // Habilitar texturas para texto
+        GlStateManager.enableTexture2D();
+        
+        // Aplicar escala para o nível
+        float scale = 0.7f;
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, scale);
+        
+        // Posição do texto (centralizado no quadrado)
+        int textWidth = mc.fontRendererObj.getStringWidth(levelText);
+        int textX = (int)((levelBoxX + (levelBoxSizeX - textWidth) / 2) / scale) + 4;
+        int textY = (int)((levelBoxY + (levelBoxSizeY - mc.fontRendererObj.FONT_HEIGHT + 1) / 2) / scale) + 3;
+        
+        // Cor do nível (branco)
+        mc.fontRendererObj.drawString(levelText, textX, textY, 0xFFFFFFFF);
+        
+        // Restaurar escala
+        GlStateManager.popMatrix();
+        GlStateManager.disableTexture2D();
+    }
+    
+    private void renderHealthBar(int x, int y) {
+        if (mc.thePlayer == null) {
+            return;
+        }
+        
+        float health = ActionbarParser.currentHP;//mc.thePlayer.getHealth();
+        float maxHealth = ActionbarParser.maxHP;//mc.thePlayer.getMaxHealth();
+        float healthPercentage = Math.min(health / maxHealth, 1.0f);
+        
+        // Desenhar fundo da barra com contorno escuro
+        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT, 
+                          new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
+        
+        // Desenhar barra de vida (verde brilhante)
+        int filledWidth = (int)(BAR_WIDTH * healthPercentage);
+        Color healthColor = new Color(172, 53, 55, 255); // Verde brilhante
+        drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, healthColor);
+        
+        // Adicionar segmento amarelo no início (mais largo como na imagem)
+        if (filledWidth > 15) {
+            //drawRect(x + 1, y + 1, 15, BAR_HEIGHT - 2, new Color(255, 255, 0, 255)); // Amarelo brilhante
+        }
+        
+        // Desenhar texto da vida
+
+        String healthText = String.format("%.0f/%.0f", health, maxHealth);
+        //String healthText = String.format(ActionbarParser.currentHP + "/f" + ActionbarParser.maxHP, health, maxHealth);
+        mc.fontRendererObj.drawStringWithShadow(healthText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+    }
+    
+    private void renderManaBar(int x, int y) {
+        if (mc.thePlayer == null) {
+            return;
+        }
+        
+        // Simulação de mana (não existe nativamente em Minecraft)
+        float mana = ActionbarParser.currentMana;
+        float maxMana = ActionbarParser.maxMana;
+        float manaPercentage = mana / maxMana;
+        
+        // Desenhar fundo da barra com contorno escuro
+        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT, 
+                          new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
+        
+        // Desenhar barra de mana (azul ciano como na imagem)
+        int filledWidth = (int)(BAR_WIDTH * manaPercentage);
+        Color manaColor = new Color(0, 255, 255, 255); // Azul ciano
+        drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, manaColor);
+        
+        // Desenhar texto da mana
+        String manaText = String.format("%.0f/%.0f", mana, maxMana);
+        mc.fontRendererObj.drawStringWithShadow(manaText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+    }
+    
+    private void renderExperienceBar(int x, int y) {
+        if (mc.thePlayer == null) {
+            return;
+        }
+        
+        // Usar experiência vanilla do jogador
+        float experience = mc.thePlayer.experience; // 0.0 a 1.0 (progresso para o próximo nível)
+        int experiencePercentage = (int)(experience * 100);
+        
+        // Desenhar fundo da barra com contorno escuro
+        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT, 
+                          new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
+        
+        // Desenhar barra de experiência (verde como barra vanilla)
+        int filledWidth = (int)(BAR_WIDTH * experience);
+        Color expColor = new Color(85, 255, 85, 255); // Verde claro como barra de experiência vanilla
+        drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, expColor);
+        
+        // Desenhar texto da experiência
+        String expText = experiencePercentage + "%";
+        mc.fontRendererObj.drawStringWithShadow(expText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+    }
+    
+    private void renderRegularCurrency(int x, int y) {
+        // Simulação de moeda regular (valor da imagem: 431,3m)
+        String currencyAmount = "431,3m";
+        
+        // Desenhar ícone de moeda dourada com contorno
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        
+        // Círculo dourado com contorno escuro
+        Color goldColor = new Color(255, 215, 0, 255); // Dourado brilhante
+        Color goldBorder = new Color(180, 150, 0, 255); // Dourado escuro para borda
+        drawCircleWithBorder(x, y + 2, CURRENCY_ICON_SIZE / 2, goldColor, goldBorder, 2);
+        
+        // Adicionar detalhe interno (círculo menor)
+        Color innerGold = new Color(255, 235, 100, 255); // Dourado mais claro
+        drawCircle(x + 3, y + 5, 3, innerGold);
+        
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        
+        // Desenhar valor da moeda
+        mc.fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
+    }
+    
+    private void renderPremiumCurrency(int x, int y) {
+        // Simulação de moeda premium (valor da imagem: 24,62k)
+        String currencyAmount = "24,62k";
+        
+        // Desenhar ícone de diamante azul com contorno
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        
+        // Diamante azul com contorno escuro
+        Color diamondColor = new Color(100, 200, 255, 255); // Azul claro
+        Color diamondBorder = new Color(0, 100, 200, 255); // Azul escuro para borda
+        drawDiamondWithBorder(x, y + 2, CURRENCY_ICON_SIZE / 2, diamondColor, diamondBorder, 2);
+        
+        // Adicionar brilho interno (losango menor)
+        Color innerDiamond = new Color(200, 230, 255, 255); // Azul muito claro
+        drawDiamond(x + 3, y + 5, 3, innerDiamond);
+        
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        
+        // Desenhar valor da moeda premium
+        mc.fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
+    }
+    
+    private void drawRect(int x, int y, int width, int height, Color color) {
+        GlStateManager.color(color.getRed() / 255.0f, color.getGreen() / 255.0f, 
+                           color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
+        Gui.drawRect(x, y, x + width, y + height, color.getRGB());
+    }
+    
+    private void drawCircle(int x, int y, int radius, Color color) {
+        GlStateManager.color(color.getRed() / 255.0f, color.getGreen() / 255.0f, 
+                           color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
+        
+        // Desenhar círculo usando pontos
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glVertex2i(x + radius, y + radius);
+        
+        for (int i = 0; i <= 360; i += 10) {
+            double angle = Math.toRadians(i);
+            int px = (int)(x + radius + radius * Math.cos(angle));
+            int py = (int)(y + radius + radius * Math.sin(angle));
+            GL11.glVertex2i(px, py);
+        }
+        
+        GL11.glEnd();
+    }
+    
+    private void drawDiamond(int x, int y, int size, Color color) {
+        GlStateManager.color(color.getRed() / 255.0f, color.getGreen() / 255.0f, 
+                           color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
+        
+        // Desenhar diamante (losango)
+        GL11.glBegin(GL11.GL_QUADS);
+        
+        // Topo
+        GL11.glVertex2i(x + size, y);
+        // Direita
+        GL11.glVertex2i(x + size * 2, y + size);
+        // Base
+        GL11.glVertex2i(x + size, y + size * 2);
+        // Esquerda
+        GL11.glVertex2i(x, y + size);
+        
+        GL11.glEnd();
+    }
+    
+    private void drawRectWithBorder(int x, int y, int width, int height, Color fillColor, Color borderColor, int borderWidth) {
+        // Desenhar o preenchimento
+        drawRect(x, y, width, height, fillColor);
+        
+        // Desenhar a borda
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        GlStateManager.color(borderColor.getRed() / 255.0f, borderColor.getGreen() / 255.0f, 
+                           borderColor.getBlue() / 255.0f, borderColor.getAlpha() / 255.0f);
+        
+        // Borda superior
+        Gui.drawRect(x, y, x + width, y + borderWidth, borderColor.getRGB());
+        // Borda inferior
+        Gui.drawRect(x, y + height - borderWidth, x + width, y + height, borderColor.getRGB());
+        // Borda esquerda
+        Gui.drawRect(x, y, x + borderWidth, y + height, borderColor.getRGB());
+        // Borda direita
+        Gui.drawRect(x + width - borderWidth, y, x + width, y + height, borderColor.getRGB());
+        
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+    }
+    
+    private void drawCircleWithBorder(int x, int y, int radius, Color fillColor, Color borderColor, int borderWidth) {
+        // Desenhar círculo preenchido
+        drawCircle(x, y, radius, fillColor);
+        
+        // Desenhar borda do círculo
+        GlStateManager.color(borderColor.getRed() / 255.0f, borderColor.getGreen() / 255.0f, 
+                           borderColor.getBlue() / 255.0f, borderColor.getAlpha() / 255.0f);
+        
+        GL11.glLineWidth(borderWidth);
+        GL11.glBegin(GL11.GL_LINE_LOOP);
+        
+        for (int i = 0; i <= 360; i += 5) {
+            double angle = Math.toRadians(i);
+            int px = (int)(x + radius + radius * Math.cos(angle));
+            int py = (int)(y + radius + radius * Math.sin(angle));
+            GL11.glVertex2i(px, py);
+        }
+        
+        GL11.glEnd();
+        GL11.glLineWidth(1.0f);
+    }
+    
+    private void drawDiamondWithBorder(int x, int y, int size, Color fillColor, Color borderColor, int borderWidth) {
+        // Desenhar diamante preenchido
+        drawDiamond(x, y, size, fillColor);
+        
+        // Desenhar borda do diamante
+        GlStateManager.color(borderColor.getRed() / 255.0f, borderColor.getGreen() / 255.0f, 
+                           borderColor.getBlue() / 255.0f, borderColor.getAlpha() / 255.0f);
+        
+        GL11.glLineWidth(borderWidth);
+        GL11.glBegin(GL11.GL_LINE_LOOP);
+        
+        // Topo
+        GL11.glVertex2i(x + size, y);
+        // Direita
+        GL11.glVertex2i(x + size * 2, y + size);
+        // Base
+        GL11.glVertex2i(x + size, y + size * 2);
+        // Esquerda
+        GL11.glVertex2i(x, y + size);
+        
+        GL11.glEnd();
+        GL11.glLineWidth(1.0f);
+    }
+}

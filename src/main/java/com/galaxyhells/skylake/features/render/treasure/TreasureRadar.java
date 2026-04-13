@@ -1,4 +1,4 @@
-package com.galaxyhells.skylake.features.render;
+package com.galaxyhells.skylake.features.render.treasure;
 
 import com.galaxyhells.skylake.data.TreasureLogger;
 import net.minecraft.client.Minecraft;

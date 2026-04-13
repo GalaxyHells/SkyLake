@@ -1,4 +1,4 @@
-package com.galaxyhells.skylake.features.hud;
+package com.galaxyhells.skylake.features.hud.timer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -82,7 +82,7 @@ public class MutantTimer {
         int width = 60;
         int height = 20;
         // Coloquei no canto superior esquerdo (pode ajustar depois)
-        int x = 10;
+        int x = sr.getScaledWidth() - width - 10;
         int y = 10;
 
         // Fundo escuro

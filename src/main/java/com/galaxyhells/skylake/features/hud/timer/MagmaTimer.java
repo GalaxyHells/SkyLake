@@ -1,4 +1,4 @@
-package com.galaxyhells.skylake.features.hud;
+package com.galaxyhells.skylake.features.hud.timer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -58,10 +58,11 @@ public class MagmaTimer {
         ScaledResolution sr = new ScaledResolution(mc);
 
         // Posição: Abaixo do Mutant Timer (se o Mutant está no y=10, este vai para o y=35)
-        int x = 10;
-        int y = 35;
+
         int width = 75; // Um pouco mais largo para caber HH:mm:ss
         int height = 20;
+        int x = sr.getScaledWidth() - width - 10;
+        int y = 35;
 
         // Fundo escuro transparente
         Gui.drawRect(x, y, x + width, y + height, 0x90000000);
