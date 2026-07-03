@@ -1,6 +1,7 @@
 package com.galaxyhells.skylake.features.hud;
 
 import com.galaxyhells.skylake.config.SkyLakeConfig;
+import com.galaxyhells.skylake.data.PriceData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -87,11 +88,13 @@ public class SkyTabMenuGui extends GuiScreen {
             renderButton(2, innerX + (buttonW + gap) * 2, innerY, buttonW, innerH, "§7Em breve...", Item.getItemFromBlock(Blocks.anvil), mouseX, mouseY, "Minions e Craft");
         }
         else if (currentPage == 1) {
-            int cols = 5; // Alterado para 5 botões horizontais
+            // PÁGINA DE TELEPORTES
+            int cols = 5;
+            int lines = 4;
             int spacing = 4;
             int btnW = (innerW - (spacing * (cols - 1))) / cols;
-            int btnH = (innerW - (spacing * (cols - 1))) / cols;
-            btnH = (int)(btnH * 0.75);
+            int btnH = (innerH - (spacing * (lines - 1))) / lines;
+            //btnH = (int)(btnH * 1.8); // Aumentado para botões mais altos
 
             for (int i = 0; i < WARPS_DATA.length; i++) {
                 int col = i % cols;
@@ -111,88 +114,206 @@ public class SkyTabMenuGui extends GuiScreen {
             }
         }
         else if (currentPage == 2) {
-            // PÁGINA DE PREÇOS - DADOS REAIS DO REDECANARY
-            int colGap = 4; // Espaçamento mínimo entre colunas
-            int colW = ((innerW - (colGap * 2)) / 3); // 3 colunas com largura máxima
-            int curY = innerY;
-            int spacing = 10;
-            int smallSpacing = 8;
+            // PÁGINA DE PREÇOS - 3 COLUNAS COLORIDAS
+            int marginPrices = 2; // 2px das bordas
+            int gapPrices = 2; // 2px entre colunas
+            int colW = (innerW - (marginPrices * 2) - (gapPrices * 2)) / 3; // Largura de cada coluna
             
-            // --- COLUNA 1: SET DRAGÃO ---
-            drawCategoryTitle(innerX, curY, "§c§lSet Dragão");
-            curY += 12;
+            // Coluna 1 - Cor Roxa
+            int col1X = innerX + marginPrices;
+            int col1Y = innerY + marginPrices;
+            int col1H = innerH - (marginPrices * 2);
+            // Fundo roxo mais transparente
+            Gui.drawRect(col1X, col1Y, col1X + colW, col1Y + col1H, 0x22AA00FF);
+            // Borda roxa
+            Gui.drawRect(col1X, col1Y, col1X + colW, col1Y + 1, 0xFFAA00FF);
+            Gui.drawRect(col1X, col1Y + col1H - 1, col1X + colW, col1Y + col1H, 0xFFAA00FF);
+            Gui.drawRect(col1X, col1Y, col1X + 1, col1Y + col1H, 0xFFAA00FF);
+            Gui.drawRect(col1X + colW - 1, col1Y, col1X + colW, col1Y + col1H, 0xFFAA00FF);
             
-            // Cabeçalho da tabela
-            this.fontRendererObj.drawStringWithShadow("§6§lSet      Capacete   Peitoral    Calça     Botas     Total", innerX, curY, 0xFFFFFF); curY += spacing;
+            // Título da coluna 1
+            this.fontRendererObj.drawStringWithShadow("§c§lItens Dragão", col1X + 5, col1Y + 5, 0xFFFFFF);
             
-            // Linha separadora
-            Gui.drawRect(innerX, curY, innerX + colW, curY + 1, 0x50FFFFFF); curY += smallSpacing;
+            // Itens de dragão - Drops
+            int itemY = col1Y + 25;
+            this.fontRendererObj.drawStringWithShadow("§e§lDrops:", col1X + 5, itemY, 0xFFFFFF);
+            itemY += 12;
             
-            // Sets do Dragão - Formato organizado
-            this.fontRendererObj.drawStringWithShadow("§eSuperior  §e41.5kk    §e66.4kk    §e58.1kk    §e33.2kk   §e200kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
-            this.fontRendererObj.drawStringWithShadow("§cForte     §c7.5kk     §c12.0kk    §c10.5kk    §c6.0kk    §c36kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
-            this.fontRendererObj.drawStringWithShadow("§5Instável   §56.25kk    §510.0kk    §58.75kk    §55.0kk    §530kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
-            this.fontRendererObj.drawStringWithShadow("§aJovem     §a4.15kk    §a6.64kk    §a5.81kk    §a3.32kk   §a20kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
-            this.fontRendererObj.drawStringWithShadow("§9Sábio     §93.12kk    §95.0kk     §94.37kk    §92.5kk    §915kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
-            this.fontRendererObj.drawStringWithShadow("§7Ancião    §72.05kk    §73.28kk    §72.87kk    §71.64kk   §710kk", innerX, curY, 0xFFFFFF); curY += smallSpacing;
-            this.fontRendererObj.drawStringWithShadow("§bProtetor  §b1.65kk    §b2.64kk    §b2.31kk    §b1.32kk   §b8kk", innerX, curY, 0xFFFFFF); curY += spacing;
+            for (PriceData.ItemPrice item : PriceData.DragonItems.DROPS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col1X + 10, itemY, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col1X + colW - 10 - this.fontRendererObj.getStringWidth(item.price);
+                this.fontRendererObj.drawStringWithShadow(item.price, priceX, itemY, 0xFFFFFF);
+                itemY += 10;
+            }
             
-            // --- COLUNA 2: DRAGÕES & MINIONS ---
-            int col2X = innerX + colW + colGap;
-            curY = innerY;
-            drawCategoryTitle(col2X, curY, "§5§lDragões & Minions");
-            curY += 12;
+            // Armaduras de dragão
+            itemY += 10;
+            this.fontRendererObj.drawStringWithShadow("§c§lArmaduras:", col1X + 5, itemY, 0xFFFFFF);
+            itemY += 12;
             
-            // Dragões
-            drawPriceLine(col2X, curY, "§5Pedra do Dragão", "§e5kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§5AOTD", "§e25kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§5Garra do Dragão", "§e3kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§5Pet Dragão", "§7???"); curY += spacing + 2;
+            for (PriceData.ArmorSet armor : PriceData.DragonItems.ARMOR_SETS) {
+                // Nome da armadura à esquerda
+                this.fontRendererObj.drawStringWithShadow(armor.name, col1X + 5, itemY, 0xFFFFFF);
+                // Preço completo
+                String cleanPrice = armor.fullSetPrice.replace("~", "");
+                int priceX = col1X + colW - 10 - this.fontRendererObj.getStringWidth(cleanPrice);
+                this.fontRendererObj.drawStringWithShadow(cleanPrice, priceX, itemY, 0xFFFFFF);
+                itemY += 10;
+                
+                // Primeira linha detalhada: Capacete e Calça
+                String line1 = "Capacete: " + armor.helmetPrice.replace("~", "") + " | Calça: " + armor.leggingsPrice.replace("~", "");
+                this.fontRendererObj.drawStringWithShadow("§7" + line1, col1X + 5, itemY, 0xFFFFFF);
+                itemY += 10;
+                
+                // Segunda linha detalhada: Peitoral e Botas
+                String line2 = "Peitoral: " + armor.chestplatePrice.replace("~", "") + " | Botas: " + armor.bootsPrice.replace("~", "");
+                this.fontRendererObj.drawStringWithShadow("§7" + line2, col1X + 5, itemY, 0xFFFFFF);
+                itemY += 12;
+            }
             
-            // Minions
-            drawCategoryTitle(col2X, curY, "§e§lItens de Minions");
-            curY += 12;
-            drawPriceLine(col2X, curY, "§7Balde Lava", "§e300k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Balde Lava Enc", "§e500k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Balde de Magma", "§e1.2kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Compactador", "§e10k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Super Compactador", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Depósito Pequeno", "§e500 c"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Depósito Médio", "§e10k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Depósito Grande", "§e300k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Catalisador", "§e30k"); curY += smallSpacing;
-            drawPriceLine(col2X, curY, "§7Fornalha de Fundição", "§e500 c"); curY += spacing;
+            // Coluna 2 - Cor Verde
+            int col2X = col1X + colW + gapPrices;
+            int col2Y = innerY + marginPrices;
+            int col2H = innerH - (marginPrices * 2);
+            // Fundo verde
+            Gui.drawRect(col2X, col2Y, col2X + colW, col2Y + col2H, 0x2200FF00);
+            // Borda verde
+            Gui.drawRect(col2X, col2Y, col2X + colW, col2Y + 1, 0xFF00FF00);
+            Gui.drawRect(col2X, col2Y + col2H - 1, col2X + colW, col2Y + col2H, 0xFF00FF00);
+            Gui.drawRect(col2X, col2Y, col2X + 1, col2Y + col2H, 0xFF00FF00);
+            Gui.drawRect(col2X + colW - 1, col2Y, col2X + colW, col2Y + col2H, 0xFF00FF00);
             
-            // --- COLUNA 3: MINI JARDIM & ARMADURAS ---
-            int col3X = col2X + colW + colGap;
-            curY = innerY;
-            drawCategoryTitle(col3X, curY, "§a§lMini Jardim");
-            curY += 12;
+            // Título da coluna 2
+            this.fontRendererObj.drawStringWithShadow("§2§lHerbalismo", col2X + 5, col2Y + 5, 0xFFFFFF);
+            
+            // Itens da loja do mini jardim
+            int itemY2 = col2Y + 25;
+            this.fontRendererObj.drawStringWithShadow("§a§lLoja Mini Jardim:", col2X + 5, itemY2, 0xFFFFFF);
+            itemY2 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.Herbalism.SHOP_ITEMS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col2X + 5, itemY2, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col2X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY2, 0xFFFFFF);
+                itemY2 += 10;
+            }
+            
+            // Drops de herbalismo
+            itemY2 += 10;
+            this.fontRendererObj.drawStringWithShadow("§e§lDrops:", col2X + 5, itemY2, 0xFFFFFF);
+            itemY2 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.Herbalism.DROPS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col2X + 5, itemY2, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col2X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY2, 0xFFFFFF);
+                itemY2 += 10;
+            }
+            
+            // Enxadas de herbalismo
+            itemY2 += 10;
+            this.fontRendererObj.drawStringWithShadow("§6§lEnxadas:", col2X + 5, itemY2, 0xFFFFFF);
+            itemY2 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.Herbalism.ITEMS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col2X + 5, itemY2, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col2X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY2, 0xFFFFFF);
+                itemY2 += 10;
+            }
+            
+            // Armaduras de herbalismo
+            itemY2 += 10;
+            this.fontRendererObj.drawStringWithShadow("§2§lArmaduras:", col2X + 5, itemY2, 0xFFFFFF);
+            itemY2 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.Herbalism.ARMOR_SETS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col2X + 5, itemY2, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col2X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY2, 0xFFFFFF);
+                itemY2 += 10;
+            }
+            
+            // Coluna 3 - Cor Azul
+            int col3X = col2X + colW + gapPrices;
+            int col3Y = innerY + marginPrices;
+            int col3H = innerH - (marginPrices * 2);
+            // Fundo azul mais transparente
+            Gui.drawRect(col3X, col3Y, col3X + colW, col3Y + col3H, 0x220000FF);
+            // Borda azul
+            Gui.drawRect(col3X, col3Y, col3X + colW, col3Y + 1, 0xFF0000FF);
+            Gui.drawRect(col3X, col3Y + col3H - 1, col3X + colW, col3Y + col3H, 0xFF0000FF);
+            Gui.drawRect(col3X, col3Y, col3X + 1, col3Y + col3H, 0xFF0000FF);
+            Gui.drawRect(col3X + colW - 1, col3Y, col3X + colW, col3Y + col3H, 0xFF0000FF);
+            
+            // Título da coluna 3
+            this.fontRendererObj.drawStringWithShadow("§9§lItens Diversos", col3X + 5, col3Y + 5, 0xFFFFFF);
+            
+            // Itens para minions
+            int itemY3 = col3Y + 25;
+            this.fontRendererObj.drawStringWithShadow("§b§lItens Minions:", col3X + 5, itemY3, 0xFFFFFF);
+            itemY3 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.MinionItems.ITEMS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col3X + 5, itemY3, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col3X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY3, 0xFFFFFF);
+                itemY3 += 10;
+            }
+            
+            // Arcos
+            itemY3 += 10;
+            this.fontRendererObj.drawStringWithShadow("§f§lArcos:", col3X + 5, itemY3, 0xFFFFFF);
+            itemY3 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.Bows.ITEMS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col3X + 5, itemY3, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col3X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY3, 0xFFFFFF);
+                itemY3 += 10;
+            }
+            
+            // Armas
+            itemY3 += 10;
+            this.fontRendererObj.drawStringWithShadow("§c§lArmas:", col3X + 5, itemY3, 0xFFFFFF);
+            itemY3 += 12;
+            
+            for (PriceData.ItemPrice item : PriceData.Weapons.ITEMS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col3X + 5, itemY3, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col3X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY3, 0xFFFFFF);
+                itemY3 += 10;
+            }
             
             // Livros
-            drawPriceLine(col3X, curY, "§2Livro Hiper Nv 5", "§e750k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2 Batata Quente", "§e220k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2 Cenoura Quente", "§e350k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Enxada Polinizada", "§e1.8kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Livro Hidromel 5", "§e7.5kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Salada de Frutas", "§e600k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Buquê de Flores", "§e850k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Cristal Iluminado", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Colar de Girassol", "§e1.2kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Dente de Leão", "§e2kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Recombinador", "§e18.75kk"); curY += spacing + 2;
+            itemY3 += 10;
+            this.fontRendererObj.drawStringWithShadow("§d§lLivros:", col3X + 5, itemY3, 0xFFFFFF);
+            itemY3 += 12;
             
-            // Armaduras Herbalismo
-            drawCategoryTitle(col3X, curY, "§2§lArmaduras");
-            curY += 12;
-            drawPriceLine(col3X, curY, "§2Set Abóbora", "§e200k"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Set Broto", "§e1kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Set Raiz", "§e8.2kk"); curY += smallSpacing;
-            drawPriceLine(col3X, curY, "§2Set Sol", "§e51.4kk"); curY += spacing;
-            
-            // Notas
-            int footerY = y + menuH - 25;
-            this.fontRendererObj.drawStringWithShadow("§7kk=milhão | k=mil | c=coins | Enc=Encantado", innerX + 10, footerY, 0xFFFFFF);
+            for (PriceData.ItemPrice item : PriceData.Books.ITEMS) {
+                // Nome do item à esquerda
+                this.fontRendererObj.drawStringWithShadow(item.name, col3X + 5, itemY3, 0xFFFFFF);
+                // Preço do item à direita
+                int priceX = col3X + colW - 10 - this.fontRendererObj.getStringWidth(item.price.replace("~", ""));
+                this.fontRendererObj.drawStringWithShadow(item.price.replace("~", ""), priceX, itemY3, 0xFFFFFF);
+                itemY3 += 10;
+            }
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -317,6 +438,30 @@ public class SkyTabMenuGui extends GuiScreen {
                         mc.thePlayer.playSound("random.click", 1.0F, 1.0F);
                     }
                 }
+                else if (currentPage == 1) {
+                    // PÁGINA DE TELEPORTES - VERIFICAR CLIQUES NOS BOTÕES
+                    int cols = 5;
+                    int lines = 4;
+                    int spacing = 4;
+                    int teleportBtnW = (innerW - (spacing * (cols - 1))) / cols;
+                    int teleportBtnH = (innerH - (spacing * (lines - 1))) / lines;
+                    //teleportBtnH = (int)(teleportBtnH * 1.8); // Aumentado para botões mais altos
+
+                    for (int i = 0; i < WARPS_DATA.length; i++) {
+                        int col = i % cols;
+                        int row = i / cols;
+                        int bx = innerX + (col * (teleportBtnW + spacing));
+                        int by = innerY + (row * (teleportBtnH + spacing));
+
+                        if (mouseX >= bx && mouseX <= bx + teleportBtnW && mouseY >= by && mouseY <= by + teleportBtnH) {
+                            // Executa o comando de teleporte
+                            String command = WARPS_DATA[i][2];
+                            mc.thePlayer.sendChatMessage("/" + command);
+                            mc.thePlayer.playSound("random.click", 1.0F, 1.0F);
+                            return;
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             System.err.println("Erro no mouseClicked: " + e.getMessage());
@@ -356,6 +501,10 @@ public class SkyTabMenuGui extends GuiScreen {
         GlStateManager.scale(1.5F, 1.5F, 1.0F);
         this.itemRender.renderItemIntoGUI(new ItemStack(itemIcon), -8, -8);
         GlStateManager.popMatrix();
+    }
+
+    public static String[][] getWarpsData() {
+        return WARPS_DATA;
     }
 
     private final Minecraft mc = Minecraft.getMinecraft();

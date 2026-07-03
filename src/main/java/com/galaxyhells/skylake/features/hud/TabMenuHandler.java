@@ -13,7 +13,6 @@ public class TabMenuHandler {
 
         // Verifica se é a tecla TAB e se o SHIFT está pressionado
         if (Keyboard.getEventKey() == Keyboard.KEY_TAB && Keyboard.getEventKeyState()) {
-//            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 //
 //                // Abre o menu se não houver nenhuma outra tela aberta
 //                if (mc.currentScreen == null) {

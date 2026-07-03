@@ -12,6 +12,10 @@ public class ActionbarParser {
     private static final Pattern MANA_PATTERN = Pattern.compile("(\\d+)/(\\d+)✎");
 
     public static void parse(String text) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+        
         String cleanText = text.replaceAll("§[0-9a-fk-or]", ""); // Remove cores
 
         Matcher hpMatch = HP_PATTERN.matcher(cleanText);

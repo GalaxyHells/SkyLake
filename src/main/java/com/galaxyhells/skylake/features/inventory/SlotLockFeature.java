@@ -1,6 +1,8 @@
 package com.galaxyhells.skylake.features.inventory;
 
-import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
+import com.galaxyhells.skylake.features.OptionsService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -12,17 +14,9 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.galaxyhells.skylake.config.ConfigHandler.lockedSlots;
-import static com.galaxyhells.skylake.utils.KeybindManager.openMenuKey;
 import static com.galaxyhells.skylake.utils.KeybindManager.lockSlotKey;
 
 public class SlotLockFeature {
-
-    // Guarda os números dos slots que estão trancados (0-8 Hotbar, 9-35 Inventário)
-    //public static final Set<Integer> lockedSlots = new HashSet<>();
 
     // ==========================================
     // 1. SISTEMA DE TRANCAR/DESTRANCAR E BLOQUEIO DE TECLADO
@@ -44,18 +38,13 @@ public class SlotLockFeature {
 
         // Se apertou "L"
         if (Keyboard.getEventKey() == lockSlotKey.getKeyCode() && Keyboard.getEventKeyState()) {
-        //if (lockSlotKey.isPressed() && Keyboard.getEventKeyState()) {
-        //if (lockSlotKey.isPressed()) {
-            if (lockedSlots.contains(slotIndex)) {
-                lockedSlots.remove(slotIndex);
+            if (SkyLake.optionsService.isSlotLocked(slotIndex)) {
+                SkyLake.optionsService.removeLockedSlot(slotIndex);
                 Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1.0F, 1.0F);
             } else {
-                lockedSlots.add(slotIndex);
+                SkyLake.optionsService.addLockedSlot(slotIndex);
                 Minecraft.getMinecraft().thePlayer.playSound("random.anvil_use", 0.5F, 1.0F);
             }
-
-            // SALVA NO ARQUIVO IMEDIATAMENTE!
-            ConfigHandler.saveConfig();
 
             event.setCanceled(true);
             return;
@@ -64,7 +53,7 @@ public class SlotLockFeature {
         // Se tentou apertar a tecla de DROP (Geralmente "Q") no inventário
         int dropKey = Minecraft.getMinecraft().gameSettings.keyBindDrop.getKeyCode();
         if (Keyboard.getEventKey() == dropKey && Keyboard.getEventKeyState()) {
-            if (lockedSlots.contains(slotIndex)) {
+            if (SkyLake.optionsService.isSlotLocked(slotIndex)) {
                 event.setCanceled(true); // BLOQUEIA O DROP
                 Minecraft.getMinecraft().thePlayer.playSound("note.bass", 1.0F, 1.0F); // Toca som de erro
             }
@@ -86,7 +75,7 @@ public class SlotLockFeature {
         } catch (Exception e) { return; }
 
         if (hoveredSlot != null && hoveredSlot.inventory instanceof InventoryPlayer) {
-            if (lockedSlots.contains(hoveredSlot.getSlotIndex())) {
+            if (SkyLake.optionsService.isSlotLocked(hoveredSlot.getSlotIndex())) {
                 event.setCanceled(true); // BLOQUEIA O CLIQUE NO ITEM
                 Minecraft.getMinecraft().thePlayer.playSound("note.bass", 1.0F, 1.0F);
             }
@@ -106,8 +95,8 @@ public class SlotLockFeature {
         // Pegamos o slot que o jogador está segurando agora (0-8)
         int currentSlot = mc.thePlayer.inventory.currentItem;
 
-        // Se o slot atual estiver na nossa lista de trancados do ConfigHandler
-        if (com.galaxyhells.skylake.config.ConfigHandler.lockedSlots.contains(currentSlot)) {
+        // Se o slot atual estiver trancado
+        if (SkyLake.optionsService.isSlotLocked(currentSlot)) {
 
             // Verificamos se a tecla de drop (Q) está sendo pressionada
             if (mc.gameSettings.keyBindDrop.isKeyDown()) {
@@ -147,7 +136,7 @@ public class SlotLockFeature {
         } catch (Exception e) { return; }
 
         for (Slot slot : gui.inventorySlots.inventorySlots) {
-            if (slot.inventory instanceof InventoryPlayer && lockedSlots.contains(slot.getSlotIndex())) {
+            if (slot.inventory instanceof InventoryPlayer && SkyLake.optionsService.isSlotLocked(slot.getSlotIndex())) {
                 int x = guiLeft + slot.xDisplayPosition;
                 int y = guiTop + slot.yDisplayPosition;
 
@@ -168,7 +157,7 @@ public class SlotLockFeature {
             // No 1.8.9, o slot selecionado na hotbar é o que conta para o drop externo
             int currentSlot = event.player.inventory.currentItem;
 
-            if (com.galaxyhells.skylake.config.ConfigHandler.lockedSlots.contains(currentSlot)) {
+            if (SkyLake.optionsService.isSlotLocked(currentSlot)) {
                 // CANCELA O EVENTO: O item volta para o seu inventário instantaneamente
                 event.setCanceled(true);
 

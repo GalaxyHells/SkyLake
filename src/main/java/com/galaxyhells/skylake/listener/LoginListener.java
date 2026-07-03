@@ -1,7 +1,8 @@
 package com.galaxyhells.skylake.listener;
 
+import com.galaxyhells.skylake.SkyLake;
 import com.galaxyhells.skylake.features.AutoLogin;
-import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.utils.OptionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -20,7 +21,7 @@ public class LoginListener {
     
     @SubscribeEvent
     public void onChatReceived(ClientChatReceivedEvent event) {
-        if (!ConfigHandler.autoLogin || mc.thePlayer == null) {
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_LOGIN)) || mc.thePlayer == null) {
             return;
         }
         

@@ -1,7 +1,9 @@
 package com.galaxyhells.skylake.features.hud.FancyHUD;
 
-import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.SkyLake;
 import com.galaxyhells.skylake.utils.ModConstants;
+import com.galaxyhells.skylake.utils.OptionType;
+import com.galaxyhells.skylake.utils.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -16,15 +18,15 @@ import org.lwjgl.opengl.GL11;
 import java.awt.Color;
 
 /**
- * Fancy Hotbar HUD - Visualização experimental com 9 quadrados e um quadrado central maior
+ * Hotbar customizada com 9 slots + slot central ampliado
  */
 public class FancyHotbar {
     
-    private static final int SQUARE_SIZE = 20;
-    private static final int CENTER_SQUARE_SIZE = SQUARE_SIZE * 2;
-    private static final int SPACING = 2;
+    private static final int SQUARE_SIZE = ThemeManager.scale(20);
+    private static final int CENTER_SQUARE_SIZE = ThemeManager.scale(40);
+    private static final int SPACING = ThemeManager.scale(2);
     private static final int HORIZONTAL_SQUARES = 9;
-    private static final int PADDING = 4;
+    private static final int PADDING = ThemeManager.scale(4);
     
     private final Minecraft mc = Minecraft.getMinecraft();
     
@@ -34,17 +36,17 @@ public class FancyHotbar {
             return;
         }
 
-        if (!ConfigHandler.fancyHUD) return;
-        
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_HUD))) return;
+
         if (mc.gameSettings.showDebugInfo) {
             return;
         }
-        
-        // Verificar se inventário ou containers estão abertos - se estiverem, não renderiza Fancy Hotbar
+
+        // Não renderiza se inventário estiver aberto
         if (mc.currentScreen != null) {
             //return;
         }
-        
+
         renderFancyHotbar();
     }
     
@@ -53,42 +55,40 @@ public class FancyHotbar {
             return;
         }
         
-        // Obter o slot selecionado da hotbar
+        // Slot atual selecionado
         int selectedSlot = mc.thePlayer.inventory.currentItem;
         
-        // Usar ScaledResolution para coordenadas de GUI
+        // Coordenadas da tela
         ScaledResolution sr = new ScaledResolution(mc);
         int screenWidth = sr.getScaledWidth();
         int screenHeight = sr.getScaledHeight();
         
-        // Calcular dimensões totais dos 9 quadrados horizontais
+        // Largura dos 9 slots
         int horizontalSquaresWidth = HORIZONTAL_SQUARES * SQUARE_SIZE + (HORIZONTAL_SQUARES - 1) * SPACING;
         int horizontalSquaresHeight = SQUARE_SIZE;
         
-        // Calcular dimensões totais do layout (quadrado maior + 9 quadrados)
+        // Dimensões totais do layout
         int totalWidth = Math.max(horizontalSquaresWidth, CENTER_SQUARE_SIZE);
         int totalHeight = horizontalSquaresHeight + SPACING + CENTER_SQUARE_SIZE;
         
-        // Posição base para o layout (canto direito inferior)
+        // Posição: canto inferior direito
         int baseX = screenWidth - totalWidth - PADDING;
         int baseY = screenHeight - totalHeight - PADDING;
         
-        // Renderizar os 9 quadrados horizontais (embaixo)
+        // Renderizar 9 slots horizontais
         renderHorizontalSquares(baseX, baseY + CENTER_SQUARE_SIZE + SPACING, selectedSlot);
         
-        // Renderizar o quadrado maior acima no lado direito
+        // Renderizar slot central ampliado
         renderSelectedItemSquare(baseX, baseY, horizontalSquaresWidth);
         
-        // Renderizar o nome do item selecionado
+        // Nome do item selecionado
         renderSelectedItemName(baseX, baseY, horizontalSquaresWidth);
     }
     
     private void renderHorizontalSquares(int baseX, int baseY, int selectedSlot) {
-        //Color squareColor = new Color(100, 150, 200, 180); // Azul claro semi-transparente
         Color squareColor = new Color(0, 0, 0, 144);
-        //Color squareColor = ModConstants.argbToColor(ModConstants.HUD_BACKGROUND);
         
-        // Habilitar blending para transparência
+        // Habilitar transparência
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
         GlStateManager.disableTexture2D();
@@ -204,8 +204,7 @@ public class FancyHotbar {
         
         if (selectedItem == null) {
             // Renderizar painel de vidro branco quando não houver item selecionado
-            //renderGlassPanel(x, y);
-            return;
+                        return;
         }
         
         // Habilitar renderização 3D para itens
@@ -447,7 +446,7 @@ public class FancyHotbar {
         Gui.drawRect(x, y, x + width, y + height, color.getRGB());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = net.minecraftforge.fml.common.eventhandler.EventPriority.HIGHEST)
     public void onRenderHotbar(RenderGameOverlayEvent.Pre event) {
         // Verifica se é o evento da hotbar
         if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR) {
@@ -455,7 +454,7 @@ public class FancyHotbar {
         }
 
         // Se a Fancy HUD estiver ativa, cancela a renderização da hotbar padrão
-        if (ConfigHandler.fancyHUD) {
+        if (Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_HUD))) {
             // Verificar se inventário ou containers estão abertos - se estiverem, não renderiza Fancy Hotbar
             //if (mc.currentScreen == null) {
                 event.setCanceled(true);

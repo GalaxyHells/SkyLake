@@ -13,7 +13,7 @@ import java.util.*;
 public class TreasureLogger {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // Caminho atualizado - usar caminho relativo como ConfigHandler
+    // Caminho base para arquivos de tesouros
     private static final String BASE_PATH = "config/skylake/treasures/";
 
     private static final Map<String, Set<String>> fileCache = new HashMap<>();
@@ -23,7 +23,6 @@ public class TreasureLogger {
      * Retorna o objeto File da pasta 'treasures'.
      */
     private static File getTreasuresDir() {
-        // Mudança: usar caminho relativo como ConfigHandler
         File dir = new File(BASE_PATH);
         if (!dir.exists()) {
             dir.mkdirs(); // Cria as pastas config -> skylake -> treasures se não existirem
@@ -113,26 +112,14 @@ public class TreasureLogger {
 
     public static void markAsCollected(String fileName, BlockPos pos) {
         String collectedFile = fileName.replace(".json", "_coletados.json");
-        System.out.println("[SkyLake DEBUG] Tentando marcar como coletado: " + pos + " no arquivo: " + collectedFile);
         
         File treasuresDir = getTreasuresDir();
-        System.out.println("[SkyLake DEBUG] Diretório de tesouros: " + treasuresDir.getAbsolutePath());
-        System.out.println("[SkyLake DEBUG] Diretório existe: " + treasuresDir.exists());
         
         List<BlockPos> collected = getCoordsFromFile(collectedFile);
-        System.out.println("[SkyLake DEBUG] Coletados antes: " + collected.size());
 
         if (!collected.contains(pos)) {
             collected.add(pos);
             saveCoordsToFile(collectedFile, collected);
-            System.out.println("[SkyLake DEBUG] Tesouro adicionado e salvo!");
-            
-            // Verificar se o arquivo foi criado
-            File savedFile = new File(treasuresDir, collectedFile);
-            System.out.println("[SkyLake DEBUG] Arquivo salvo existe: " + savedFile.exists());
-            System.out.println("[SkyLake DEBUG] Caminho completo: " + savedFile.getAbsolutePath());
-        } else {
-            System.out.println("[SkyLake DEBUG] Tesouro já estava na lista de coletados");
         }
     }
 

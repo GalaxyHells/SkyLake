@@ -1,5 +1,7 @@
 package com.galaxyhells.skylake.features.inventory;
 
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -28,7 +30,7 @@ public class RarityBackground {
      */
     @SubscribeEvent
     public void onDrawSlot(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.rarityBackground) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.RARITY_BACKGROUND))) return;
         if (!(event.gui instanceof GuiContainer)) return;
 
         GuiContainer gui = (GuiContainer) event.gui;
@@ -76,14 +78,14 @@ public class RarityBackground {
 
     @SubscribeEvent
     public void onRenderHotbar(RenderGameOverlayEvent.Post event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.rarityBackground || event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.RARITY_BACKGROUND)) || event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return;
 
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer == null) return;
 
         ScaledResolution sr = new ScaledResolution(mc);
-        int xBase = sr.getScaledWidth() / 2 - 90;
-        int y = sr.getScaledHeight() - 22;
+        int xBase = sr.getScaledWidth() / 2 - 89;
+        int y = sr.getScaledHeight() - 19;
 
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];

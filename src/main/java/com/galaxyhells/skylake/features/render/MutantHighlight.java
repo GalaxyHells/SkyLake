@@ -1,6 +1,8 @@
 package com.galaxyhells.skylake.features.render;
 
+import com.galaxyhells.skylake.SkyLake;
 import com.galaxyhells.skylake.utils.RenderUtils2;
+import com.galaxyhells.skylake.utils.OptionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -29,7 +31,7 @@ public class MutantHighlight {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantHighlight) {
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_HIGHLIGHT))) {
             currentMutant = null;
             return;
         }

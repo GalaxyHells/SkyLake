@@ -1,8 +1,11 @@
 package com.galaxyhells.skylake.features.hud.FancyHUD;
 
-import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.SkyLake;
 import com.galaxyhells.skylake.utils.ActionbarParser;
-import net.minecraft.client.Minecraft;
+import com.galaxyhells.skylake.utils.NotificationManager;
+import com.galaxyhells.skylake.utils.OptionType;
+import com.galaxyhells.skylake.utils.PerformanceUtils;
+import com.galaxyhells.skylake.utils.RenderOptimizer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,33 +29,57 @@ public class FancyStatOverlay {
     private static final int BAR_SPACING = 2;
     private static final int CURRENCY_ICON_SIZE = 8;
     
-    private final Minecraft mc = Minecraft.getMinecraft();
-    
+        
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) {
             return;
         }
 
-        if (!ConfigHandler.fancyStatOverlay) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_STAT_OVERLAY))) return;
         
-        if (mc.gameSettings.showDebugInfo) {
+        if (PerformanceUtils.getMC().gameSettings.showDebugInfo) {
             return;
         }
         
-        if (mc.currentScreen != null) {
-            //return;
-        }
+        //if (PerformanceUtils.getMC().currentScreen != null) {
+        //    return;
+        //}
         
+        // Renderizar sempre (HUD precisa ser contínuo)
         renderStatOverlay();
     }
     
-    private void renderStatOverlay() {
-        if (mc.thePlayer == null) {
+    /**
+     * Esconde a barra de experiência padrão do Minecraft quando a FancyStatOverlay está ativa
+     */
+    @SubscribeEvent
+    public void hideVanillaExperienceBar(RenderGameOverlayEvent.Pre event) {
+        // Verificar se é o evento da barra de experiência
+        if (event.type != RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             return;
         }
         
-        ScaledResolution sr = new ScaledResolution(mc);
+        // Verificar se a FancyStatOverlay está ativa
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_STAT_OVERLAY))) {
+            return;
+        }
+        
+        // Não esconder se o debug info estiver ativo
+        if (PerformanceUtils.getMC().gameSettings.showDebugInfo) {
+            return;
+        }
+        
+        // Cancelar a renderização da barra de experiência vanilla
+        event.setCanceled(true);
+    }
+    
+    private void renderStatOverlay() {
+        if (!PerformanceUtils.isValidPlayer()) {
+            return;
+        }
+        
+        ScaledResolution sr = PerformanceUtils.getScaledResolution();
         int baseX = HUD_X_OFFSET;
         int baseY = HUD_Y_OFFSET;
         
@@ -75,7 +102,7 @@ public class FancyStatOverlay {
     }
     
     private void renderPlayerHead(int x, int y) {
-        if (mc.thePlayer == null) {
+        if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
 
@@ -89,9 +116,9 @@ public class FancyStatOverlay {
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
         
         try {
-            // Usar o skin do jogador
-            ResourceLocation skinLocation = mc.thePlayer.getLocationSkin();
-            mc.getTextureManager().bindTexture(skinLocation);
+            // Usar a skin do jogador
+            ResourceLocation skinLocation = PerformanceUtils.getMC().thePlayer.getLocationSkin();
+            PerformanceUtils.getMC().getTextureManager().bindTexture(skinLocation);
 
             // Desenhar a cabeça (8x8 pixels da skin, escalados para HEAD_SIZE)
             Gui.drawScaledCustomSizeModalRect(x, y, 8, 8, 8, 8, HEAD_SIZE, HEAD_SIZE, 64, 64);
@@ -135,11 +162,11 @@ public class FancyStatOverlay {
     }
     
     private void renderPlayerLevel(int x, int y) {
-        if (mc.thePlayer == null) {
+        if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
         
-        int level = mc.thePlayer.experienceLevel;
+        int level = PerformanceUtils.getMC().thePlayer.experienceLevel;
         String levelText = String.valueOf(level);
         
         // Dimensões do quadrado do nível
@@ -160,12 +187,12 @@ public class FancyStatOverlay {
         GlStateManager.scale(scale, scale, scale);
         
         // Posição do texto (centralizado no quadrado)
-        int textWidth = mc.fontRendererObj.getStringWidth(levelText);
+        int textWidth = PerformanceUtils.getMC().fontRendererObj.getStringWidth(levelText);
         int textX = (int)((levelBoxX + (levelBoxSizeX - textWidth) / 2) / scale) + 4;
-        int textY = (int)((levelBoxY + (levelBoxSizeY - mc.fontRendererObj.FONT_HEIGHT + 1) / 2) / scale) + 3;
+        int textY = (int)((levelBoxY + (levelBoxSizeY - PerformanceUtils.getMC().fontRendererObj.FONT_HEIGHT + 1) / 2) / scale) + 3;
         
         // Cor do nível (branco)
-        mc.fontRendererObj.drawString(levelText, textX, textY, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawString(levelText, textX, textY, 0xFFFFFFFF);
         
         // Restaurar escala
         GlStateManager.popMatrix();
@@ -173,7 +200,7 @@ public class FancyStatOverlay {
     }
     
     private void renderHealthBar(int x, int y) {
-        if (mc.thePlayer == null) {
+        if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
         
@@ -181,29 +208,28 @@ public class FancyStatOverlay {
         float maxHealth = ActionbarParser.maxHP;//mc.thePlayer.getMaxHealth();
         float healthPercentage = Math.min(health / maxHealth, 1.0f);
         
-        // Desenhar fundo da barra com contorno escuro
+        // Fundo da barra
         drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT, 
                           new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
         
-        // Desenhar barra de vida (verde brilhante)
+        // Barra de vida
         int filledWidth = (int)(BAR_WIDTH * healthPercentage);
         Color healthColor = new Color(172, 53, 55, 255); // Verde brilhante
         drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, healthColor);
         
-        // Adicionar segmento amarelo no início (mais largo como na imagem)
+        // Segmento amarelo (estilo visual)
         if (filledWidth > 15) {
-            //drawRect(x + 1, y + 1, 15, BAR_HEIGHT - 2, new Color(255, 255, 0, 255)); // Amarelo brilhante
+            // Desativado temporariamente
         }
         
-        // Desenhar texto da vida
+        // Texto HP
 
         String healthText = String.format("%.0f/%.0f", health, maxHealth);
-        //String healthText = String.format(ActionbarParser.currentHP + "/f" + ActionbarParser.maxHP, health, maxHealth);
-        mc.fontRendererObj.drawStringWithShadow(healthText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(healthText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
     }
     
     private void renderManaBar(int x, int y) {
-        if (mc.thePlayer == null) {
+        if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
         
@@ -223,16 +249,16 @@ public class FancyStatOverlay {
         
         // Desenhar texto da mana
         String manaText = String.format("%.0f/%.0f", mana, maxMana);
-        mc.fontRendererObj.drawStringWithShadow(manaText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(manaText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
     }
     
     private void renderExperienceBar(int x, int y) {
-        if (mc.thePlayer == null) {
+        if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
         
         // Usar experiência vanilla do jogador
-        float experience = mc.thePlayer.experience; // 0.0 a 1.0 (progresso para o próximo nível)
+        float experience = PerformanceUtils.getMC().thePlayer.experience; // 0.0 a 1.0 (progresso para o próximo nível)
         int experiencePercentage = (int)(experience * 100);
         
         // Desenhar fundo da barra com contorno escuro
@@ -246,7 +272,7 @@ public class FancyStatOverlay {
         
         // Desenhar texto da experiência
         String expText = experiencePercentage + "%";
-        mc.fontRendererObj.drawStringWithShadow(expText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(expText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
     }
     
     private void renderRegularCurrency(int x, int y) {
@@ -271,7 +297,7 @@ public class FancyStatOverlay {
         GlStateManager.enableTexture2D();
         
         // Desenhar valor da moeda
-        mc.fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
     }
     
     private void renderPremiumCurrency(int x, int y) {
@@ -296,7 +322,7 @@ public class FancyStatOverlay {
         GlStateManager.enableTexture2D();
         
         // Desenhar valor da moeda premium
-        mc.fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
     }
     
     private void drawRect(int x, int y, int width, int height, Color color) {

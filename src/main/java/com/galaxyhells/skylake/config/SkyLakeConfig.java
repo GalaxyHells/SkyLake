@@ -1,5 +1,7 @@
 package com.galaxyhells.skylake.config;
 
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import java.io.IOException;
@@ -29,132 +31,160 @@ public class SkyLakeConfig extends GuiScreen {
         // Mutant Highlight
         this.buttonList.add(new GuiButton(6, x, yStart + 125, 200, 20, getMutanthighlightText()));
 
-        // AFK Feature
-        this.buttonList.add(new GuiButton(7, x, yStart + 150, 200, 20, getAFKFeatureText()));
-
         // Mutant Spawn Boxes
-        this.buttonList.add(new GuiButton(8, x, yStart + 175, 200, 20, getMutantSpawnBoxesText()));
+        this.buttonList.add(new GuiButton(7, x, yStart + 150, 200, 20, getMutantSpawnBoxesText()));
 
         // Fancy HUD
-        this.buttonList.add(new GuiButton(9, x, yStart + 200, 200, 20, getFancyHUDText()));
+        this.buttonList.add(new GuiButton(8, x, yStart + 175, 200, 20, getFancyHUDText()));
 
         // Map Feature
-        this.buttonList.add(new GuiButton(10, x, yStart + 225, 200, 20, getMapFeatureText()));
+//        this.buttonList.add(new GuiButton(9, x, yStart + 200, 200, 20, getMapFeatureText()));
 
         // Fancy Stat Overlay
-        this.buttonList.add(new GuiButton(11, x, yStart + 250, 200, 20, getFancyStatOverlayText()));
+        this.buttonList.add(new GuiButton(10, x, yStart + 225, 200, 20, getFancyStatOverlayText()));
 
         // Auto Sprint
-        this.buttonList.add(new GuiButton(12, x, yStart + 275, 200, 20, getAutoSprintText()));
+        this.buttonList.add(new GuiButton(11, x, yStart + 250, 200, 20, getAutoSprintText()));
 
         // Auto Login
-        this.buttonList.add(new GuiButton(13, x, yStart + 300, 200, 20, getAutoLoginText()));
+        this.buttonList.add(new GuiButton(12, x, yStart + 275, 200, 20, getAutoLoginText()));
+
+        // Auto Fishing
+        this.buttonList.add(new GuiButton(13, x, yStart + 300, 200, 20, getAutoFishingText()));
     }
 
     private String getBossAlertText() {
-        // Lê diretamente do Handler para evitar dessincronização
-        return "Alerta de spawn Enderman Mutante: " + (ConfigHandler.bossAlert ? "§aON" : "§cOFF");
+        // Lê do novo OptionsService
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.BOSS_ALERT));
+        return "Alerta de spawn Enderman Mutante: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getRarityText() {
-        return "Cor de fundo do item: " + (ConfigHandler.rarityBackground ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.RARITY_BACKGROUND));
+        return "Cor de fundo do item: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getStatsText() {
-        return "HUD de Stats: " + (ConfigHandler.statOverlay ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.STAT_OVERLAY));
+        return "HUD de Stats: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getMutantTimerText() {
-        return "Contagem pro Enderman Mutante: " + (ConfigHandler.mutantTimer ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_TIMER));
+        return "Contagem pro Enderman Mutante: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getMagmaTimerText() {
-        return "Contagem pro Magma Boss: " + (ConfigHandler.magmaTimer ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAGMA_TIMER));
+        return "Contagem pro Magma Boss: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getMutanthighlightText() {
-        return "Destacar Enderman Mutante: " + (ConfigHandler.mutantHighlight ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_HIGHLIGHT));
+        return "Destacar Enderman Mutante: " + (value ? "§aON" : "§cOFF");
     }
 
-    private String getAFKFeatureText() {
-
-        return "AFK Automático: " + (ConfigHandler.afkFeature ? "§aON" : "§cOFF");
-    }
-
+    
     private String getMutantSpawnBoxesText() {
-        return "Caixas de spawn do mutante: " + (ConfigHandler.mutantSpawnBoxes ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_SPAWN_BOXES));
+        return "Caixas de spawn do mutante: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getFancyHUDText() {
-        return "HUD Maravilhosa: " + (ConfigHandler.fancyHUD ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_HUD));
+        return "Hotbar Maravilhosa: " + (value ? "§aON" : "§cOFF");
     }
 
-    private String getMapFeatureText() {
-        return "Mapa (Tecla M): " + (ConfigHandler.mapFeature ? "§aON" : "§cOFF");
-    }
+//    private String getMapFeatureText() {
+//        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAP_FEATURE));
+//        return "Mapa (Tecla M): " + (value ? "§aON" : "§cOFF");
+//    }
 
     private String getFancyStatOverlayText() {
-        return "Stat Maravilhoso: " + (ConfigHandler.fancyStatOverlay ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_STAT_OVERLAY));
+        return "Stat Maravilhoso: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getAutoSprintText() {
-        return "Auto Sprint: " + (ConfigHandler.autoSprint ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_SPRINT));
+        return "Auto Sprint: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getAutoLoginText() {
-        return "Auto Login: " + (ConfigHandler.autoLogin ? "§aON" : "§cOFF");
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_LOGIN));
+        return "Auto Login: " + (value ? "§aON" : "§cOFF");
     }
 
+    
+    private String getAutoFishingText() {
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_FISHING));
+        return "Pescaria Automática: " + (value ? "§aON" : "§cOFF");
+    }
+
+    
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 1) {
-            ConfigHandler.bossAlert = !ConfigHandler.bossAlert;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.BOSS_ALERT));
+            SkyLake.optionsService.set(OptionType.BOSS_ALERT, !currentValue);
             button.displayString = getBossAlertText();
         } else if (button.id == 2) {
             // Alterna a nova função
-            ConfigHandler.rarityBackground = !ConfigHandler.rarityBackground;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.RARITY_BACKGROUND));
+            SkyLake.optionsService.set(OptionType.RARITY_BACKGROUND, !currentValue);
             button.displayString = getRarityText();
         } else if (button.id == 3) {
             // Alterna o HUD de Vida e Mana
-            ConfigHandler.statOverlay = !ConfigHandler.statOverlay;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.STAT_OVERLAY));
+            SkyLake.optionsService.set(OptionType.STAT_OVERLAY, !currentValue);
             button.displayString = getStatsText();
         } else if (button.id == 4) {
             // Alterna o display do Tempo pro Mutante
-            ConfigHandler.mutantTimer = !ConfigHandler.mutantTimer;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_TIMER));
+            SkyLake.optionsService.set(OptionType.MUTANT_TIMER, !currentValue);
             button.displayString = getMutantTimerText();
         } else if (button.id == 5) {
             // Alterna o display do Tempo pro Magma Boss
-            ConfigHandler.magmaTimer = !ConfigHandler.magmaTimer;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAGMA_TIMER));
+            SkyLake.optionsService.set(OptionType.MAGMA_TIMER, !currentValue);
             button.displayString = getMagmaTimerText();
         } else if (button.id == 6) {
             // Alterna o destaque do Enderman Mutante
-            ConfigHandler.mutantHighlight = !ConfigHandler.mutantHighlight;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_HIGHLIGHT));
+            SkyLake.optionsService.set(OptionType.MUTANT_HIGHLIGHT, !currentValue);
             button.displayString = getMutanthighlightText();
         } else if (button.id == 7) {
-            ConfigHandler.afkFeature = !ConfigHandler.afkFeature;
-            button.displayString = getAFKFeatureText();
-        } else if (button.id == 8) {
-            ConfigHandler.mutantSpawnBoxes = !ConfigHandler.mutantSpawnBoxes;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_SPAWN_BOXES));
+            SkyLake.optionsService.set(OptionType.MUTANT_SPAWN_BOXES, !currentValue);
             button.displayString = getMutantSpawnBoxesText();
-        } else if (button.id == 9) {
-            ConfigHandler.fancyHUD = !ConfigHandler.fancyHUD;
+        } else if (button.id == 8) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_HUD));
+            SkyLake.optionsService.set(OptionType.FANCY_HUD, !currentValue);
             button.displayString = getFancyHUDText();
+        } else if (button.id == 9) {
+//            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAP_FEATURE));
+//            SkyLake.optionsService.set(OptionType.MAP_FEATURE, !currentValue);
+//            button.displayString = getMapFeatureText();
         } else if (button.id == 10) {
-            ConfigHandler.mapFeature = !ConfigHandler.mapFeature;
-            button.displayString = getMapFeatureText();
-        } else if (button.id == 11) {
-            ConfigHandler.fancyStatOverlay = !ConfigHandler.fancyStatOverlay;
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_STAT_OVERLAY));
+            SkyLake.optionsService.set(OptionType.FANCY_STAT_OVERLAY, !currentValue);
             button.displayString = getFancyStatOverlayText();
-        } else if (button.id == 12) {
-            ConfigHandler.autoSprint = !ConfigHandler.autoSprint;
+        } else if (button.id == 11) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_SPRINT));
+            SkyLake.optionsService.set(OptionType.AUTO_SPRINT, !currentValue);
             button.displayString = getAutoSprintText();
-        } else if (button.id == 13) {
-            ConfigHandler.autoLogin = !ConfigHandler.autoLogin;
+        } else if (button.id == 12) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_LOGIN));
+            SkyLake.optionsService.set(OptionType.AUTO_LOGIN, !currentValue);
             button.displayString = getAutoLoginText();
+        } else if (button.id == 13) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_FISHING));
+            SkyLake.optionsService.set(OptionType.AUTO_FISHING, !currentValue);
+            button.displayString = getAutoFishingText();
         }
 
         // Salva qualquer alteração no arquivo
-        ConfigHandler.saveConfig();
+        SkyLake.optionsService.save();
     }
 
     @Override

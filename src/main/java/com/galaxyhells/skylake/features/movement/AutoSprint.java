@@ -1,6 +1,7 @@
 package com.galaxyhells.skylake.features.movement;
 
-import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -18,7 +19,7 @@ public class AutoSprint {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer == null || mc.theWorld == null) return;
         
-        if (!ConfigHandler.autoSprint) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_SPRINT))) return;
         
         // Verifica se o jogador pode correr (não tem fome, não está voando, etc.)
         if (!mc.thePlayer.isSprinting() && canSprint(mc.thePlayer) && isMovingForward(mc.thePlayer)) {

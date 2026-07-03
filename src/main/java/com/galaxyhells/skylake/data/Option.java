@@ -1,6 +1,6 @@
 package com.galaxyhells.skylake.data;
 
-import neomin.uimod.api.enums.OptionType;
+import com.galaxyhells.skylake.utils.OptionType;
 
 public class Option<T> {
 

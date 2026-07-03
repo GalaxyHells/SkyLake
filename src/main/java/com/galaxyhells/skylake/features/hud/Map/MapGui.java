@@ -1,11 +1,9 @@
-package com.galaxyhells.skylake.features.hud;
+package com.galaxyhells.skylake.features.hud.Map;
 
-import com.galaxyhells.skylake.config.ConfigHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.BlockPos;
 
 import java.util.HashMap;

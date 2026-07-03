@@ -1,9 +1,10 @@
 package com.galaxyhells.skylake.hud;
 
-import neomin.uimod.api.data.OptionalData;
-import neomin.uimod.api.enums.OptionCategoryType;
-import neomin.uimod.api.enums.OptionType;
-import neomin.uimod.gameplay.services.OptionsService;
+import com.galaxyhells.skylake.data.OptionalData;
+import com.galaxyhells.skylake.features.OptionsService;
+import com.galaxyhells.skylake.utils.OptionCategoryType;
+import com.galaxyhells.skylake.utils.OptionType;
+import com.galaxyhells.skylake.utils.ThemeManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
@@ -20,13 +21,13 @@ public class ConfigUI extends GuiScreen {
 
     private final OptionsService optionsService;
 
-    private OptionCategoryType selectedCategory = OptionCategoryType.GENERAL;
+    private OptionCategoryType selectedCategory = OptionCategoryType.HUD;
 
     private int panelX, panelY, panelW, panelH;
     private int sidebarW;
     private final int PADDING = 8;
-    private final int ROW_H   = 24;
-    private final int FIELD_H = 13;
+    private final int ROW_H   = ThemeManager.scale(24);
+    private final int FIELD_H = ThemeManager.scale(13);
 
     private int scrollOffset = 0;
     private static final int SCROLL_SPEED = 3;
@@ -34,7 +35,7 @@ public class ConfigUI extends GuiScreen {
     private final Map<OptionType, GuiTextField> stringFields = new EnumMap<>(OptionType.class);
 
     private GuiTextField intField    = null;
-    private OptionType   editingInt  = null;
+    private OptionType editingInt  = null;
 
     private GuiTextField floatField   = null;
     private OptionType   editingFloat = null;
@@ -63,11 +64,11 @@ public class ConfigUI extends GuiScreen {
     }
 
     private void recalcLayout() {
-        panelW   = Math.min(420, (int) (width  * 0.78));
-        panelH   = Math.min(280, (int) (height * 0.72));
+        panelW   = ThemeManager.scale(Math.min(420, (int) (width  * 0.78)));
+        panelH   = ThemeManager.scale(Math.min(280, (int) (height * 0.72)));
         panelX   = (width  - panelW) / 2;
         panelY   = (height - panelH) / 2;
-        sidebarW = Math.max(90, panelW / 4);
+        sidebarW = ThemeManager.scale(Math.max(90, panelW / 4));
     }
 
     private void rebuildFields() {
@@ -129,6 +130,7 @@ public class ConfigUI extends GuiScreen {
         if (charField == null || editingChar == null) return;
         String text = charField.getText();
         optionsService.set(editingChar, text.isEmpty() ? null : text.charAt(0));
+        optionsService.save(); // Salva imediatamente
         charField = null; editingChar = null;
     }
 
@@ -136,7 +138,7 @@ public class ConfigUI extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
         drawRect(panelX, panelY, panelX + panelW, panelY + panelH,
-                new Color(18, 18, 18, 215).getRGB());
+                ThemeManager.getBackgroundColor(215));
 
         drawSidebar(mouseX, mouseY);
         drawContent(mouseX, mouseY);
@@ -144,7 +146,7 @@ public class ConfigUI extends GuiScreen {
 
         if (openDropdown != null) drawDropdown(mouseX, mouseY);
 
-        drawCenteredString(fontRendererObj, "§bUI Mod Config",
+        drawCenteredString(fontRendererObj, "§bConfigurar SkyLake",
                 panelX + panelW / 2, panelY - 12, 0xFFFFFF);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -152,10 +154,10 @@ public class ConfigUI extends GuiScreen {
 
     private void drawSidebar(int mouseX, int mouseY) {
         drawRect(panelX, panelY, panelX + sidebarW, panelY + panelH,
-                new Color(12, 12, 12, 230).getRGB());
+                ThemeManager.getSecondaryColor(230));
         drawRect(panelX + sidebarW - 1, panelY,
                 panelX + sidebarW, panelY + panelH,
-                new Color(0, 200, 200, 90).getRGB());
+                ThemeManager.getPrimaryColor(90));
 
         int itemH   = getSidebarItemHeight();
         int offsetY = panelY + PADDING;
@@ -167,15 +169,15 @@ public class ConfigUI extends GuiScreen {
 
             if (selected) {
                 drawRect(panelX, offsetY, panelX + sidebarW - 1, offsetY + itemH - 2,
-                        new Color(0, 160, 160, 70).getRGB());
+                        ThemeManager.getPrimaryColor(70));
                 drawRect(panelX, offsetY, panelX + 3, offsetY + itemH - 2,
-                        new Color(0, 220, 220, 220).getRGB());
+                        ThemeManager.getPrimaryColor(220));
             } else if (hovered) {
                 drawRect(panelX, offsetY, panelX + sidebarW - 1, offsetY + itemH - 2,
                         new Color(255, 255, 255, 18).getRGB());
             }
 
-            int textColor = selected ? 0x00FFFF : (hovered ? 0xCCCCCC : 0x777777);
+            int textColor = selected ? ThemeManager.getPrimaryColor() : (hovered ? 0xCCCCCC : 0x777777);
             int textY     = offsetY + (itemH - 2 - fontRendererObj.FONT_HEIGHT) / 2;
             drawString(fontRendererObj, cat.getDisplay(), panelX + PADDING + 4, textY, textColor);
             offsetY += itemH;
@@ -398,9 +400,18 @@ public class ConfigUI extends GuiScreen {
         }
 
         if (editingChar != null && charField != null) {
-            if (Character.isLetterOrDigit(ch) || key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE)
+            if (Character.isLetterOrDigit(ch) || 
+                key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE ||
+                key == Keyboard.KEY_SPACE || key == Keyboard.KEY_TAB ||
+                key == Keyboard.KEY_LSHIFT || key == Keyboard.KEY_RSHIFT ||
+                key == Keyboard.KEY_LCONTROL || key == Keyboard.KEY_RCONTROL ||
+                key == Keyboard.KEY_LMENU || key == Keyboard.KEY_RMENU ||
+                key == Keyboard.KEY_LMETA || key == Keyboard.KEY_RMETA)
                 charField.textboxKeyTyped(ch, key);
-            if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) commitChar();
+            if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER || 
+                key == Keyboard.KEY_ESCAPE) {
+                commitChar();
+            }
             return;
         }
 

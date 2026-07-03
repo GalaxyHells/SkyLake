@@ -1,5 +1,8 @@
 package com.galaxyhells.skylake.features.hud.timer;
 
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
+import com.galaxyhells.skylake.utils.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -20,7 +23,7 @@ public class MutantTimer {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantTimer) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_TIMER))) return;
         if (event.phase != TickEvent.Phase.END) return;
 
         Minecraft mc = Minecraft.getMinecraft();
@@ -55,7 +58,7 @@ public class MutantTimer {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Post event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.mutantTimer) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_TIMER))) return;
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
         Minecraft mc = Minecraft.getMinecraft();
@@ -79,11 +82,11 @@ public class MutantTimer {
         ScaledResolution sr = new ScaledResolution(mc);
 
         // Configuração visual do retângulo
-        int width = 60;
-        int height = 20;
+        int width = ThemeManager.scale(60);
+        int height = ThemeManager.scale(20);
         // Coloquei no canto superior esquerdo (pode ajustar depois)
-        int x = sr.getScaledWidth() - width - 10;
-        int y = 10;
+        int x = sr.getScaledWidth() - width - ThemeManager.scale(10);
+        int y = ThemeManager.scale(10);
 
         // Fundo escuro
         Gui.drawRect(x, y, x + width, y + height, 0x90000000);
@@ -95,11 +98,11 @@ public class MutantTimer {
         // Renderizar uma cabeça customizada via NBT Base64 é muito pesado e complexo para um HUD simples.
         // A melhor alternativa nativa e limpa é a Pérola do Fim ou o Ovo de Spawn.
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + 5, y + 2, 0);
+        GlStateManager.translate(x + ThemeManager.scale(5), y + ThemeManager.scale(2), 0);
         mc.getRenderItem().renderItemIntoGUI(new ItemStack(Items.ender_pearl), 0, 0);
         GlStateManager.popMatrix();
 
         // Desenha o relógio
-        mc.fontRendererObj.drawStringWithShadow(timeText, x + 24, y + 6, textColor);
+        mc.fontRendererObj.drawStringWithShadow(timeText, x + ThemeManager.scale(24), y + ThemeManager.scale(6), textColor);
     }
 }

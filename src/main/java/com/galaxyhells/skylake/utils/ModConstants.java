@@ -51,6 +51,16 @@ public final class ModConstants {
     public static final String HEADLESS_SPAWN_MESSAGE = "Headless Horseman";
     public static final String MUTANT_NAME_TAG = "Mutante";
     
+    // Configurações de AutoLogin
+    public static final String LOGIN_PROMPT = "Utilize o comando /logar <senha>.";
+    public static final String REGISTER_PROMPT = "registre-se com /register";
+    public static final String LOGIN_SUCCESS = "Você logou com sucesso.";
+    public static final String REGISTER_SUCCESS = "registrado com sucesso";
+    public static final String LOGIN_FILE = "skylake_login.txt";
+    public static final String AUTOLOGIN_PREFIX = "[SkyLake] AutoLogin: ";
+    public static final int MAX_LOGIN_ATTEMPTS = 3;
+    public static final long LOGIN_COOLDOWN = 2000; // 2 segundos
+    
     // Cores Básicas
     public static final int COLOR_GREEN = 0xFF55FF55;
     public static final int COLOR_YELLOW = 0xFFFFFF55;

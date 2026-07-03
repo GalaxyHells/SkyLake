@@ -1,5 +1,8 @@
 package com.galaxyhells.skylake.features.hud.timer;
 
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
+import com.galaxyhells.skylake.utils.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -12,19 +15,22 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 public class MagmaTimer {
+    
+    private static final Minecraft mc = Minecraft.getMinecraft();
+    private static final int[] SPAWN_HOURS = {6, 14, 22};
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Post event) {
-        // Verifica se a feature está ligada na sua config
-        if (!com.galaxyhells.skylake.config.ConfigHandler.magmaTimer) return;
+        // Verificar se feature está ativa
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAGMA_TIMER))) return;
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
         Minecraft mc = Minecraft.getMinecraft();
 
-        // --- LÓGICA DE TEMPO ---
+        // Calcular próximo spawn
         Calendar now = Calendar.getInstance();
         int currentHour = now.get(Calendar.HOUR_OF_DAY);
-        int[] spawns = {6, 14, 22};
+        int[] spawns = SPAWN_HOURS;
         int nextSpawnHour = -1;
 
         for (int spawn : spawns) {
@@ -49,43 +55,43 @@ public class MagmaTimer {
         long diffMillis = target.getTimeInMillis() - now.getTimeInMillis();
         String timeText = formatTime(diffMillis);
 
-        // --- SISTEMA DE CORES ---
+        // Cores do timer
         int textColor = 0xFF55FF55; // Verde
         if (diffMillis < TimeUnit.MINUTES.toMillis(30)) textColor = 0xFFFFFF55; // Amarelo (< 30 min)
         if (diffMillis < TimeUnit.MINUTES.toMillis(10)) textColor = 0xFFFF5555; // Vermelho (< 10 min)
 
-        // --- RENDERIZAÇÃO VISUAL ---
+        // Renderização
         ScaledResolution sr = new ScaledResolution(mc);
 
-        // Posição: Abaixo do Mutant Timer (se o Mutant está no y=10, este vai para o y=35)
+        // Posição abaixo do Mutant Timer
 
-        int width = 75; // Um pouco mais largo para caber HH:mm:ss
-        int height = 20;
-        int x = sr.getScaledWidth() - width - 10;
-        int y = 35;
+        int width = ThemeManager.scale(75); // Largura para HH:mm:ss
+        int height = ThemeManager.scale(20);
+        int x = sr.getScaledWidth() - width - ThemeManager.scale(10);
+        int y = ThemeManager.scale(35);
 
-        // Fundo escuro transparente
+        // Fundo
         Gui.drawRect(x, y, x + width, y + height, 0x90000000);
 
-        // Borda lateral cor de Fogo/Lava (Dourado/Laranja)
+        // Borda laranja
         Gui.drawRect(x, y, x + 2, y + height, 0xFFFFAA00);
 
-        // --- ÍCONE (Magma Cream) ---
+        // Ícone Magma Cream
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 
-        mc.getRenderItem().renderItemIntoGUI(new ItemStack(Items.magma_cream), x + 5, y + 2);
+        mc.getRenderItem().renderItemIntoGUI(new ItemStack(Items.magma_cream), x + ThemeManager.scale(5), y + ThemeManager.scale(2));
 
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
 
-        // Desenha o texto do tempo
-        mc.fontRendererObj.drawStringWithShadow(timeText, x + 24, y + 6, textColor);
+        // Texto do timer
+        mc.fontRendererObj.drawStringWithShadow(timeText, x + ThemeManager.scale(24), y + ThemeManager.scale(6), textColor);
     }
 
     private String formatTime(long millis) {

@@ -22,7 +22,7 @@ public class SkyLakeCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/skylake [guia/inspect/treasurewaypoints]";
+        return "/skylake [guia/treasurewaypoints]";
     }
 
     @Override
@@ -122,12 +122,6 @@ public class SkyLakeCommand extends CommandBase {
             // Inicia a rota passando o fileName para o TreasureGui poder salvar o progresso depois
             TreasureGui.INSTANCE.startRoute(lista, prefixoChat, fileName);
             sender.addChatMessage(new ChatComponentText("§b[SkyLake] §aGuia iniciado: §e" + world + " §7(" + lista.size() + " restantes)"));
-            return;
-        }
-
-        // --- SUBCOMANDO: INSPECT ---
-        if (args[0].equalsIgnoreCase("inspect")) {
-            com.galaxyhells.skylake.utils.SkullUtils.inspectNearby();
             return;
         }
 

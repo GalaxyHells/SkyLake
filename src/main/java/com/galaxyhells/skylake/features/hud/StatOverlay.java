@@ -1,7 +1,9 @@
 package com.galaxyhells.skylake.features.hud;
 
-import com.galaxyhells.skylake.config.ConfigHandler;
+import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.utils.OptionType;
 import com.galaxyhells.skylake.utils.ActionbarParser;
+import com.galaxyhells.skylake.utils.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -11,12 +13,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class StatOverlay {
 
-    int HP_BAR_HEIGHT = 12;
-    int MANA_BAR_HEIGHT = 7;
+    int HP_BAR_HEIGHT = ThemeManager.scale(9);
+    int MANA_BAR_HEIGHT = ThemeManager.scale(9);
 
-    int BORDER_COLOR = 0x90000000;
-    int BACKGROUND_COLOR = 0x73000000;
-    int CONTENT_COLOR = 0xB0000000;
+    int BORDER_COLOR = ThemeManager.getBackgroundColor(144);
+    int BACKGROUND_COLOR = ThemeManager.getBackgroundColor(115);
+    int CONTENT_COLOR = ThemeManager.getPrimaryColor(176);
 
     @SubscribeEvent
     public void onActionbar(ClientChatReceivedEvent event) {
@@ -28,7 +30,7 @@ public class StatOverlay {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Pre event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.statOverlay) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.STAT_OVERLAY))) return;
 
         // Esconde os corações e a barra de comida originais
         if (event.type == RenderGameOverlayEvent.ElementType.HEALTH ||
@@ -40,7 +42,7 @@ public class StatOverlay {
 
     @SubscribeEvent
     public void onRenderPost(RenderGameOverlayEvent.Post event) {
-        if (!com.galaxyhells.skylake.config.ConfigHandler.statOverlay) return;
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.STAT_OVERLAY))) return;
 
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
@@ -49,7 +51,7 @@ public class StatOverlay {
         int screenWidth = sr.getScaledWidth();
         int screenHeight = sr.getScaledHeight();
 
-        if (!ConfigHandler.fancyStatOverlay) {
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.FANCY_STAT_OVERLAY))) {
             // Posições base (em cima de onde seriam os corações e fome)
             int xHP = screenWidth / 2 - 91;
             int xMana = screenWidth / 2 + 10;
@@ -69,13 +71,8 @@ public class StatOverlay {
             int yMana = yHP + HP_BAR_HEIGHT + 1; //39
 
             // --- DESENHO DA BARRA DE VIDA ---
-            //drawStatBar(xHP, y, (81 * 2 + xMana - xHP), ActionbarParser.currentHP, ActionbarParser.maxHP, 0xFFFF5555);
-            //drawStatBar(xBar, yHP, barWidth, ActionbarParser.currentHP, ActionbarParser.maxHP, CONTENT_COLOR, HP_BAR_HEIGHT); // 0xFFAAAAAA
-            //mc.fontRendererObj.drawStringWithShadow(ActionbarParser.currentHP + "/" + ActionbarParser.maxHP, xBar + 2, yHP + 2, 0xFFFFFF);
 
             // --- DESENHO DA BARRA DE MANA ---0xFF0066FF
-            //drawStatBar(xBar, yMana, barWidth, ActionbarParser.currentMana, ActionbarParser.maxMana, CONTENT_COLOR, MANA_BAR_HEIGHT);
-            //mc.fontRendererObj.drawStringWithShadow(ActionbarParser.currentMana + "/" + ActionbarParser.maxMana, xBar + 2, yMana + 0, 0xFFFFFF);
         }
     }
 

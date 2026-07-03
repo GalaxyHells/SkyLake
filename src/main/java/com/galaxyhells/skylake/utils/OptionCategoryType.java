@@ -1,14 +1,21 @@
 package com.galaxyhells.skylake.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
 public enum OptionCategoryType {
-    GENERAL("Geral"),
-    GRAPHICAL("Gráficos"),
-    KEYBIND("Controle");
+    HUD("HUD"),
+    RENDER("Renderização"),
+    INVENTORY("Inventário"),
+    MOVEMENT("Movimento"),
+    SYSTEM("Sistema"),
+    KEYBINDS("Keybinds"),
+    UI("Interface");
 
     private final String display;
+
+    OptionCategoryType(String display) {
+        this.display = display;
+    }
+
+    public String getDisplay() {
+        return display;
+    }
 }
