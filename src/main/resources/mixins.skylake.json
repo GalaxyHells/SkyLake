@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "com.galaxyhells.skylake.mixins",
+  "refmap": "mixins.skylake.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinGuiContainer"
+  ]
+}

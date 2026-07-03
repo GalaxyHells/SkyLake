@@ -11,36 +11,38 @@ public enum OptionType {
     FANCY_STAT_OVERLAY("Status Bonita", OptionCategoryType.HUD, true, Boolean.class),
     //MAP_FEATURE("Mapa (Tecla M)", OptionCategoryType.HUD, true, Boolean.class),
     ITEM_LOG("Log de Itens", OptionCategoryType.HUD, true, Boolean.class),
-    
+
     // Render Features
     MUTANT_HIGHLIGHT("Destacar Mutante", OptionCategoryType.RENDER, true, Boolean.class),
     MUTANT_SPAWN_BOXES("Locais de Spawn do Enderman Mutante", OptionCategoryType.RENDER, true, Boolean.class),
     DRAGON_HIGHLIGHT("Destacar Dragão", OptionCategoryType.RENDER, true, Boolean.class),
     TREASURE_WAYPOINT("Waypoints Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
     //TREASURE_RADAR("Radar Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
-    
+
     // Inventory Features
     RARITY_BACKGROUND("Fundo por Raridade", OptionCategoryType.INVENTORY, true, Boolean.class),
     SLOT_LOCK("Travar Slots", OptionCategoryType.INVENTORY, true, Boolean.class),
     LOCKED_SLOTS("Slots Travados", OptionCategoryType.INVENTORY, "", String.class),
-    
+    CENTER_INVENTORY("Centralizar Inventário", OptionCategoryType.INVENTORY, true, Boolean.class),
+
     // Movement Features
     AUTO_SPRINT("Correr Automático", OptionCategoryType.MOVEMENT, true, Boolean.class),
     AUTO_FISHING("Pescaria Automática", OptionCategoryType.MOVEMENT, true, Boolean.class),
-    
+
     // System Features
     AUTO_LOGIN("Login Automático", OptionCategoryType.SYSTEM, true, Boolean.class),
     BOSS_ALERT("Alerta de Boss", OptionCategoryType.SYSTEM, true, Boolean.class),
     DRAGON_DROP_ANNOUNCER("Anunciador de Drops do Dragão", OptionCategoryType.SYSTEM, true, Boolean.class),
-    
+
     // Keybinds
     KEY_SLOT_LOCK("Travar Slot", OptionCategoryType.KEYBINDS, 'L', Character.class),
     KEY_CONFIG_MENU("Menu Config", OptionCategoryType.KEYBINDS, 'G', Character.class),
-    
+
     // UI Settings
     HUD_SCALE("Escala HUD", OptionCategoryType.UI, 1.0f, Float.class),
     TREASURE_GUI("GUI Tesouros", OptionCategoryType.UI, true, Boolean.class),
     //TREASURE_RADAR("Radar de Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
+    CHROMA_UI("Interface Chroma (RGB)", OptionCategoryType.UI, false, Boolean.class),
     THEME_STYLE("Tema da Interface", OptionCategoryType.UI,
             new OptionalData<>(String.class, "Neon", "Claro", "Escuro"), null);
 

@@ -11,6 +11,7 @@ import com.galaxyhells.skylake.features.hud.Map.MapFeature;
 import com.galaxyhells.skylake.features.hud.StatOverlay;
 import com.galaxyhells.skylake.features.hud.timer.MagmaTimer;
 import com.galaxyhells.skylake.features.hud.timer.MutantTimer;
+import com.galaxyhells.skylake.features.inventory.InventoryCenter;
 import com.galaxyhells.skylake.features.inventory.TooltipListener;
 import com.galaxyhells.skylake.features.render.treasure.TreasureClickHandler;
 import com.galaxyhells.skylake.features.render.treasure.TreasureGui;
@@ -28,6 +29,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
 
@@ -41,12 +44,19 @@ public class SkyLake {
 
     public static final String MODID = "skylake";
     public static final String NAME = "SkyLake";
-    public static final String VERSION = "0.5.0a";
+    public static final String VERSION = "0.5.0";
 
     @Mod.Instance(MODID)
     public static SkyLake instance;
     
     public static OptionsService optionsService;
+
+//    @Mod.EventHandler
+//    public void preInit(){
+//        // ESSAS DUAS LINHAS SÃO OBRIGATÓRIAS
+//        MixinBootstrap.init();
+//        Mixins.addConfiguration("mixins.skylake.json");
+//    }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
@@ -95,6 +105,7 @@ public class SkyLake {
         // Data Management
         ItemDataManager.loadLocalPrices();
         MinecraftForge.EVENT_BUS.register(new TooltipListener());
+        MinecraftForge.EVENT_BUS.register(new InventoryCenter());
 
         // 6. Registro de Utilitários (Keybind Management - precisa ser antes das features que dependem dele)
         com.galaxyhells.skylake.utils.KeybindManager.register();

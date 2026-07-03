@@ -1,10 +1,8 @@
 package com.galaxyhells.skylake.data;
 
-import com.galaxyhells.skylake.utils.WorldUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import java.io.*;
 import java.nio.charset.StandardCharsets;

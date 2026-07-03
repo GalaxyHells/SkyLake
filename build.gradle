@@ -2,15 +2,21 @@ buildscript {
     repositories {
         jcenter()
         maven { url = "https://maven.minecraftforge.net/" }
+        // Repositório necessário para o Mixin
+        maven { url = "https://repo.spongepowered.org/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        // Plugin do Mixin
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+// Aplicação do plugin do Mixin
+apply plugin: 'org.spongepowered.mixin'
 
-version = "0.5.0a"
+version = "0.5.0"
 group = "com.galaxyhells.skylake"
 archivesBaseName = "SkyLake"
 sourceCompatibility = targetCompatibility = "1.8"
@@ -20,26 +26,36 @@ minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
     runDir = "run"
     mappings = "stable_20"
+    // Opcional: Adicione isso se precisar que o mixin remapeie o código automaticamente
+    makeObfSourceJar = true
 }
 
 repositories {
     mavenCentral()
+    maven { url = "https://repo.spongepowered.org/maven" }
 }
 
 configurations {
-    lombok
-    compileOnly.extendsFrom(lombok)
-    annotationProcessor.extendsFrom(lombok)
+    // Lombok configurado para versão antiga do Gradle
+    compile
 }
 
 dependencies {
-    lombok 'org.projectlombok:lombok:1.18.30'
+    // Usamos 'compile' em vez de 'compileOnly' ou 'annotationProcessor'
+    compile 'org.projectlombok:lombok:1.18.30'
+
+    // Mixin (também usando 'compile')
+    compile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
 }
 
 compileJava {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-    options.annotationProcessorPath = configurations.lombok
 }
 
 processResources {
