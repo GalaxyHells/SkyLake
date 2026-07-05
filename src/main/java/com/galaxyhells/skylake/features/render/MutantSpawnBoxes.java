@@ -28,6 +28,8 @@ public class MutantSpawnBoxes {
         net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
         if (mc.thePlayer == null) return;
 
+        if (mc.thePlayer.posZ < 334 || mc.thePlayer.posZ > 525) return;
+
         // Renderiza caixas de 3x3x1 em cada local de spawn
         List<BlockPos> spawnLocations = MutantSpawnDataManager.getSpawnLocations();
         for (BlockPos pos : spawnLocations) {

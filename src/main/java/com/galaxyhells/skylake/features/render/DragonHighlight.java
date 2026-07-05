@@ -42,8 +42,10 @@ public class DragonHighlight {
             lastCheckTime = currentTime;
             updateDragonLocation(mc);
         }
+
+        if (mc.thePlayer.posZ < 334 || mc.thePlayer.posZ > 525) return;
         
-        // Renderiza a cada frame (não pisca!)
+        // Renderiza a cada frame
         if (currentDragon != null && !currentDragon.isDead) {
             renderHighlight(currentDragon, event.partialTicks);
         }
