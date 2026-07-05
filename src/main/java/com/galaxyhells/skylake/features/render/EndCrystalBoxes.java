@@ -15,11 +15,11 @@ public class EndCrystalBoxes {
 
     public static final EndCrystalBoxes INSTANCE = new EndCrystalBoxes();
 
-    private volatile boolean shouldRender = true;
-
-    public void setEnabled(boolean enabled) {
-        this.shouldRender = enabled;
-    }
+//    private volatile boolean shouldRender = true;
+//
+//    public void setEnabled(boolean enabled) {
+//        this.shouldRender = enabled;
+//    }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
@@ -32,9 +32,9 @@ public class EndCrystalBoxes {
         // Renderiza caixas de 3x3x1 em cada local de spawn
         List<BlockPos> spawnLocations = EndCrystalDataManager.getSpawnLocations();
         for (BlockPos pos : spawnLocations) {
-            double x = pos.getX();
+            double x = pos.getX() - 0.5f;
             double y = pos.getY();
-            double z = pos.getZ();
+            double z = pos.getZ() - 0.5f;
 
             // Desenha caixa de 3x3x1 (largura=3, altura=1)
             // Cor verde translúcido para distinguir dos outros waypoints
@@ -44,8 +44,8 @@ public class EndCrystalBoxes {
                     y,
                     z,
                     3.0f,         // largura
-                    1.0f,         // altura
-                    0x5500FF00,   // cor
+                    3.0f,         // altura
+                    0xFF800080,   // cor
                     1.0f,         // alpha (transparência base)
                     4.0f          // espessura da linha
             );

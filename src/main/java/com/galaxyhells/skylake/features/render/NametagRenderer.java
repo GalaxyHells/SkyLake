@@ -84,15 +84,19 @@ public class NametagRenderer {
         GlStateManager.scale(-scale, -scale, scale);
 
         // =========================================================
-        // 1. PREPARAÇÃO DO OPENGL (O SEGREDO PARA A COR NÃO FICAR PRETA)
+        // 1. PREPARAÇÃO DO OPENGL
         // =========================================================
         GlStateManager.disableLighting(); // Tira a sombra do mundo
-        GlStateManager.depthMask(false);
-        GlStateManager.disableDepth();    // Faz aparecer na frente do mob
+
+        // Garantimos que o teste de profundidade está LIGADO
+        // para que a nametag seja escondida por paredes e blocos.
+        GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
+
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 
-        // CRÍTICO: Desliga as texturas para os retângulos poderem ser coloridos livremente!
+        // Desliga as texturas para os retângulos poderem ser coloridos livremente
         GlStateManager.disableTexture2D();
 
         // =========================================================
@@ -106,7 +110,7 @@ public class NametagRenderer {
         // 3. DESENHANDO AS BARRAS
         // =========================================================
         // Background Principal (Fundo do nome)
-        Gui.drawRect(-halfWidth - 2, -20, halfWidth + 2, -10, corFundoNome);
+        Gui.drawRect(-halfWidth - 2, -20, halfWidth + 2, -9, corFundoNome);
 
         int fillWidth = (int)(barWidth * healthPercent);
 
