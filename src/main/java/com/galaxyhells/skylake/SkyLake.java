@@ -13,6 +13,7 @@ import com.galaxyhells.skylake.features.hud.timer.MagmaTimer;
 import com.galaxyhells.skylake.features.hud.timer.MutantTimer;
 import com.galaxyhells.skylake.features.inventory.InventoryCenter;
 import com.galaxyhells.skylake.features.inventory.TooltipListener;
+import com.galaxyhells.skylake.features.render.NametagRenderer;
 import com.galaxyhells.skylake.features.render.treasure.TreasureClickHandler;
 import com.galaxyhells.skylake.features.render.treasure.TreasureGui;
 import com.galaxyhells.skylake.features.render.treasure.TreasureWaypoint;
@@ -24,6 +25,7 @@ import com.galaxyhells.skylake.features.movement.AutoFishing;
 import com.galaxyhells.skylake.features.AutoLogin;
 import com.galaxyhells.skylake.features.itemlog.ItemLogFeature;
 import com.galaxyhells.skylake.listener.ItemLogListener;
+import com.galaxyhells.skylake.features.render.NametagHider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -89,6 +91,8 @@ public class SkyLake {
         net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(mapFeature);
 
         // 4. Registro de Features Render
+        MinecraftForge.EVENT_BUS.register(NametagHider.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(NametagRenderer.INSTANCE);
         // Treasure System
         MinecraftForge.EVENT_BUS.register(TreasureWaypoint.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TreasureClickHandler.INSTANCE);

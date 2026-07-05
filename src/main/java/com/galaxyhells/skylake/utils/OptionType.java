@@ -18,6 +18,8 @@ public enum OptionType {
     DRAGON_HIGHLIGHT("Destacar Dragão", OptionCategoryType.RENDER, true, Boolean.class),
     TREASURE_WAYPOINT("Waypoints Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
     //TREASURE_RADAR("Radar Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
+    HIDE_NAMETAGS("Esconder Nametag vanilla", OptionCategoryType.RENDER, false, Boolean.class),
+    CUSTOM_NAMETAGS("Nametag Customizada", OptionCategoryType.RENDER, false, Boolean.class),
 
     // Inventory Features
     RARITY_BACKGROUND("Fundo por Raridade", OptionCategoryType.INVENTORY, true, Boolean.class),
