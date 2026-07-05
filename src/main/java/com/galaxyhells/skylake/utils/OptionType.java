@@ -15,6 +15,7 @@ public enum OptionType {
     // Render Features
     MUTANT_HIGHLIGHT("Destacar Mutante", OptionCategoryType.RENDER, true, Boolean.class),
     MUTANT_SPAWN_BOXES("Locais de Spawn do Enderman Mutante", OptionCategoryType.RENDER, true, Boolean.class),
+    END_CRYSTAL_BOXES("Locais de Spawn do EndCrystal", OptionCategoryType.RENDER, true, Boolean.class),
     DRAGON_HIGHLIGHT("Destacar Dragão", OptionCategoryType.RENDER, true, Boolean.class),
     TREASURE_WAYPOINT("Waypoints Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
     //TREASURE_RADAR("Radar Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
