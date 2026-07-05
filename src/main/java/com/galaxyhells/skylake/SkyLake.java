@@ -13,19 +13,16 @@ import com.galaxyhells.skylake.features.hud.timer.MagmaTimer;
 import com.galaxyhells.skylake.features.hud.timer.MutantTimer;
 import com.galaxyhells.skylake.features.inventory.InventoryCenter;
 import com.galaxyhells.skylake.features.inventory.TooltipListener;
-import com.galaxyhells.skylake.features.render.NametagRenderer;
+import com.galaxyhells.skylake.features.render.*;
 import com.galaxyhells.skylake.features.render.treasure.TreasureClickHandler;
 import com.galaxyhells.skylake.features.render.treasure.TreasureGui;
 import com.galaxyhells.skylake.features.render.treasure.TreasureWaypoint;
-import com.galaxyhells.skylake.features.render.MutantSpawnBoxes;
-import com.galaxyhells.skylake.features.render.DragonHighlight;
 import com.galaxyhells.skylake.features.movement.AutoSprint;
 import com.galaxyhells.skylake.features.movement.AutoFishing;
 //import com.galaxyhells.skylake.features.render.treasure.TreasureRadar;
 import com.galaxyhells.skylake.features.AutoLogin;
 import com.galaxyhells.skylake.features.itemlog.ItemLogFeature;
 import com.galaxyhells.skylake.listener.ItemLogListener;
-import com.galaxyhells.skylake.features.render.NametagHider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -102,6 +99,7 @@ public class SkyLake {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.render.MutantHighlight());
         MinecraftForge.EVENT_BUS.register(MutantSpawnBoxes.INSTANCE);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new DragonHighlight());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(EndCrystalBoxes.INSTANCE);
 
         // 5. Registro de Features Inventory
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.features.inventory.SlotLockFeature());
