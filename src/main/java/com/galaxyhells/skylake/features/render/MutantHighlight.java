@@ -84,7 +84,9 @@ public class MutantHighlight {
                 z,
                 HIGHLIGHT_WIDTH,
                 HIGHLIGHT_HEIGHT,
-                HIGHLIGHT_COLOR
+                HIGHLIGHT_COLOR,
+                1.0f,
+                4f
         );
     }
     

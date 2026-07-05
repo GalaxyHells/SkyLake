@@ -1,6 +1,7 @@
 package com.galaxyhells.skylake.features.render;
 
 import com.galaxyhells.skylake.SkyLake;
+import com.galaxyhells.skylake.data.EndCrystalDataManager;
 import com.galaxyhells.skylake.data.MutantSpawnDataManager;
 import com.galaxyhells.skylake.utils.RenderUtils2;
 import com.galaxyhells.skylake.utils.OptionType;
@@ -10,10 +11,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.List;
 
-public class MutantSpawnBoxes {
+public class EndCrystalBoxes {
 
-    public static final MutantSpawnBoxes INSTANCE = new MutantSpawnBoxes();
-    
+    public static final EndCrystalBoxes INSTANCE = new EndCrystalBoxes();
+
     private volatile boolean shouldRender = true;
 
     public void setEnabled(boolean enabled) {
@@ -23,18 +24,18 @@ public class MutantSpawnBoxes {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         // Verifica se a feature está ativa na config
-        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MUTANT_SPAWN_BOXES))) return;
-        
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.END_CRYSTAL_BOXES))) return;
+
         net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
         if (mc.thePlayer == null) return;
 
         // Renderiza caixas de 3x3x1 em cada local de spawn
-        List<BlockPos> spawnLocations = MutantSpawnDataManager.getSpawnLocations();
+        List<BlockPos> spawnLocations = EndCrystalDataManager.getSpawnLocations();
         for (BlockPos pos : spawnLocations) {
             double x = pos.getX();
             double y = pos.getY();
             double z = pos.getZ();
-            
+
             // Desenha caixa de 3x3x1 (largura=3, altura=1)
             // Cor verde translúcido para distinguir dos outros waypoints
             // Centraliza a caixa como no TreasureWaypoint
