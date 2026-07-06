@@ -28,8 +28,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
 
@@ -89,7 +87,7 @@ public class SkyLake {
 
         // 4. Registro de Features Render
         MinecraftForge.EVENT_BUS.register(NametagHider.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(NametagRenderer.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(CustomNametag.INSTANCE);
         // Treasure System
         MinecraftForge.EVENT_BUS.register(TreasureWaypoint.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TreasureClickHandler.INSTANCE);

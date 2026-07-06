@@ -28,7 +28,7 @@ public class FancyStatOverlay {
     private static final int BAR_HEIGHT = 10;
     private static final int BAR_SPACING = 2;
     private static final int CURRENCY_ICON_SIZE = 8;
-    
+    private static final Color fillColor = new Color(20, 20, 20, 255);
         
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
@@ -100,44 +100,88 @@ public class FancyStatOverlay {
         renderRegularCurrency(baseX, currencyY);
         renderPremiumCurrency(baseX, currencyY + CURRENCY_ICON_SIZE + 4);
     }
-    
+
     private void renderPlayerHead(int x, int y) {
         if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
 
+        drawRect(x + 1, y + 1, HEAD_SIZE - 2, HEAD_SIZE - 2, new Color(20, 20, 20, 144));
+
         // Renderizar a cabeça do jogador com estados OpenGL corretos
         GlStateManager.pushMatrix();
-        
+
         // Limpar estados anteriores que podem causar problemas de cor
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        
+
         try {
             // Usar a skin do jogador
             ResourceLocation skinLocation = PerformanceUtils.getMC().thePlayer.getLocationSkin();
             PerformanceUtils.getMC().getTextureManager().bindTexture(skinLocation);
 
-            // Desenhar a cabeça (8x8 pixels da skin, escalados para HEAD_SIZE)
-            Gui.drawScaledCustomSizeModalRect(x, y, 8, 8, 8, 8, HEAD_SIZE, HEAD_SIZE, 64, 64);
+            // Desenhar a base da cabeça (Coordenadas UV: 8, 8) fatiada
+            drawRoundedHeadLayer(x, y, 8, 8);
 
-            // Desenhar o chapéu/camada extra (40x8 pixels da skin)
-            Gui.drawScaledCustomSizeModalRect(x, y, 40, 8, 8, 8, HEAD_SIZE, HEAD_SIZE, 64, 64);
+            // Desenhar o chapéu/camada extra (Coordenadas UV: 40, 8) fatiado
+            drawRoundedHeadLayer(x, y, 40, 8);
 
         } catch (Exception e) {
-            // Em caso de erro, desenhar um quadrado padrão
+            // Em caso de erro, desenhar um quadrado padrão com os cantos cortados
             GlStateManager.disableTexture2D();
-            drawRect(x, y, HEAD_SIZE, HEAD_SIZE, new Color(100, 100, 100, 200));
+
+            // Simulação do corte no fallback (opcional, mas mantém a consistência visual)
+            int scale = HEAD_SIZE / 8;
+            Color fallbackColor = new Color(100, 100, 100, 200);
+            Gui.drawRect(x + scale, y, x + HEAD_SIZE - scale, y + scale, fallbackColor.getRGB()); // Topo
+            Gui.drawRect(x, y + scale, x + HEAD_SIZE, y + HEAD_SIZE - scale, fallbackColor.getRGB()); // Miolo
+            Gui.drawRect(x + scale, y + HEAD_SIZE - scale, x + HEAD_SIZE - scale, y + HEAD_SIZE, fallbackColor.getRGB()); // Base
+
             GlStateManager.enableTexture2D();
         }
-        
+
         GlStateManager.popMatrix();
         GlStateManager.disableBlend();
-        
+
         // Desenhar borda separadamente
         renderHeadBorder(x, y);
+    }
+
+    /**
+     * Desenha uma camada da cabeça 8x8 fatiada em 3 partes para omitir os 4 cantos.
+     */
+    private void drawRoundedHeadLayer(int x, int y, int startU, int startV) {
+        // Calcula o tamanho proporcional de 1 pixel da skin escalado para a HUD
+        int scale = HEAD_SIZE / 8;
+
+        // 1. Linha do topo (Altura de 1 pixel da skin, largura de 6 pixels)
+        Gui.drawScaledCustomSizeModalRect(
+                x + scale, y,
+                startU + 1, startV,
+                6, 1,
+                HEAD_SIZE - (scale * 2), scale,
+                64, 64
+        );
+
+        // 2. Miolo (Altura de 6 pixels da skin, largura total de 8 pixels)
+        Gui.drawScaledCustomSizeModalRect(
+                x, y + scale,
+                startU, startV + 1,
+                8, 6,
+                HEAD_SIZE, HEAD_SIZE - (scale * 2),
+                64, 64
+        );
+
+        // 3. Linha da base (Altura de 1 pixel da skin, largura de 6 pixels)
+        Gui.drawScaledCustomSizeModalRect(
+                x + scale, y + HEAD_SIZE - scale,
+                startU + 1, startV + 7,
+                6, 1,
+                HEAD_SIZE - (scale * 2), scale,
+                64, 64
+        );
     }
     
     private void renderHeadBorder(int x, int y) {
@@ -152,10 +196,14 @@ public class FancyStatOverlay {
                            borderColor.getBlue() / 255.0f, borderColor.getAlpha() / 255.0f);
         
         // Desenhar borda com 1 pixel de espessura
-        Gui.drawRect(x, y, x + HEAD_SIZE, y + 1, borderColor.getRGB()); // superior
-        Gui.drawRect(x, y + HEAD_SIZE - 1, x + HEAD_SIZE, y + HEAD_SIZE, borderColor.getRGB()); // inferior
-        Gui.drawRect(x, y, x + 1, y + HEAD_SIZE, borderColor.getRGB()); // esquerda
-        Gui.drawRect(x + HEAD_SIZE - 1, y, x + HEAD_SIZE, y + HEAD_SIZE, borderColor.getRGB()); // direita
+        // Borda superior
+        Gui.drawRect(x + 1, y, x + HEAD_SIZE - 1, y + 1, borderColor.getRGB());
+        // Borda inferior
+        Gui.drawRect(x + 1, y + HEAD_SIZE - 1, x + HEAD_SIZE - 1, y + HEAD_SIZE, borderColor.getRGB());
+        // Borda esquerda
+        Gui.drawRect(x, y + 1, x + 1, y + HEAD_SIZE - 1, borderColor.getRGB());
+        // Borda direita
+        Gui.drawRect(x + HEAD_SIZE - 1, y + 1, x + HEAD_SIZE, y + HEAD_SIZE - 1, borderColor.getRGB());
         
         GlStateManager.disableBlend();
         GlStateManager.enableTexture2D();
@@ -209,7 +257,7 @@ public class FancyStatOverlay {
         float healthPercentage = Math.min(health / maxHealth, 1.0f);
         
         // Fundo da barra
-        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT, 
+        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT,
                           new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
         
         // Barra de vida
@@ -370,7 +418,8 @@ public class FancyStatOverlay {
     
     private void drawRectWithBorder(int x, int y, int width, int height, Color fillColor, Color borderColor, int borderWidth) {
         // Desenhar o preenchimento
-        drawRect(x, y, width, height, fillColor);
+        //drawRect(x, y, width, height, fillColor);
+        drawRect(x + 1, y +1, width - 2, height - 1, fillColor);
         
         // Desenhar a borda
         GlStateManager.disableTexture2D();
@@ -380,13 +429,22 @@ public class FancyStatOverlay {
                            borderColor.getBlue() / 255.0f, borderColor.getAlpha() / 255.0f);
         
         // Borda superior
-        Gui.drawRect(x, y, x + width, y + borderWidth, borderColor.getRGB());
+        Gui.drawRect(x + 1, y, x + width - 1, y + borderWidth, borderColor.getRGB());
         // Borda inferior
-        Gui.drawRect(x, y + height - borderWidth, x + width, y + height, borderColor.getRGB());
+        Gui.drawRect(x + 1, y + height - borderWidth, x + width - 1, y + height, borderColor.getRGB());
         // Borda esquerda
-        Gui.drawRect(x, y, x + borderWidth, y + height, borderColor.getRGB());
+        Gui.drawRect(x, y + 1, x + borderWidth, y + height - 1, borderColor.getRGB());
         // Borda direita
-        Gui.drawRect(x + width - borderWidth, y, x + width, y + height, borderColor.getRGB());
+        Gui.drawRect(x + width - borderWidth, y + 1, x + width, y + height - 1, borderColor.getRGB());
+
+//        // Borda superior
+//        Gui.drawRect(x, y, x + width, y + borderWidth, borderColor.getRGB());
+//        // Borda inferior
+//        Gui.drawRect(x, y + height - borderWidth, x + width, y + height, borderColor.getRGB());
+//        // Borda esquerda
+//        Gui.drawRect(x, y, x + borderWidth, y + height, borderColor.getRGB());
+//        // Borda direita
+//        Gui.drawRect(x + width - borderWidth, y, x + width, y + height, borderColor.getRGB());
         
         GlStateManager.disableBlend();
         GlStateManager.enableTexture2D();

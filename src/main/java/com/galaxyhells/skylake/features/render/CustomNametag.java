@@ -17,9 +17,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NametagRenderer {
+public class CustomNametag {
 
-    public static final NametagRenderer INSTANCE = new NametagRenderer();
+    public static final CustomNametag INSTANCE = new CustomNametag();
 
     // Regex seguro que ignora o coração e pega vírgulas
     private static final Pattern SKYBLOCK_NAMETAG_PATTERN = Pattern.compile("\\[Lv ?(\\d+)\\] (.*?) ([\\d,]+)/([\\d,]+)");
