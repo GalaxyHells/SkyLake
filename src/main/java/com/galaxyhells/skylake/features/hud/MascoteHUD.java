@@ -15,7 +15,7 @@ import java.awt.Color;
 public class MascoteHUD {
 
     private static final int HUD_X_OFFSET = 10;
-    private static final int HUD_Y_OFFSET = 80;
+    private static final int HUD_Y_OFFSET = 60;
     private static final int LINE_SPACING = 12;
     private static final int BACKGROUND_PADDING = 4;
 

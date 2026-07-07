@@ -85,7 +85,10 @@ public class WorldUtils {
             String cleanedLine = EnumChatFormatting.getTextWithoutFormattingCodes(rawLine).trim();
 
             if (cleanedLine.startsWith("Carteira:")) {
-                return cleanedLine.substring("Carteira:".length()).trim();
+                String rawValue = cleanedLine.substring("Carteira:".length()).trim();
+
+                // Divide na vírgula e retorna apenas a primeira parte (o número com pontos, sem decimais)
+                return rawValue.split(",")[0];
             }
         }
         return "0";

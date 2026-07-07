@@ -99,9 +99,10 @@ public class FancyStatOverlay {
         renderExperienceBar(barsX, baseY + (BAR_HEIGHT + BAR_SPACING) * 2);
         
         // Renderizar moedas
-        int currencyY = baseY + HEAD_SIZE + 5;
-        renderRegularCurrency(baseX, currencyY);
-        renderPremiumCurrency(baseX, currencyY + CURRENCY_ICON_SIZE + 4);
+        int currencyX = baseX + HEAD_SIZE + 5;
+        int currencyY = baseY + HEAD_SIZE - 5;
+        renderRegularCurrency(currencyX, currencyY);
+        renderPremiumCurrency(currencyY + 77, currencyY);
     }
 
     private void renderPlayerHead(int x, int y) {
@@ -377,7 +378,7 @@ public class FancyStatOverlay {
         GlStateManager.enableTexture2D();
         
         // Desenhar valor da moeda
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y + 2, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 3, y + 2, 0xFFFFFFFF);
     }
     
     private void renderPremiumCurrency(int x, int y) {
@@ -402,7 +403,7 @@ public class FancyStatOverlay {
         GlStateManager.enableTexture2D();
         
         // Desenhar valor da moeda premium
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y + 2, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 3, y + 2, 0xFFFFFFFF);
     }
     
     private void drawRect(int x, int y, int width, int height, Color color) {
