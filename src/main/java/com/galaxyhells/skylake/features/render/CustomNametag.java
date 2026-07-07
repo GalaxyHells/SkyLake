@@ -140,7 +140,7 @@ public class CustomNametag {
         GlStateManager.scale(0.8, 0.8, 0.8);
 
         String pctText = (int)(healthPercent * 100) + "%";
-        font.drawString(pctText, -font.getStringWidth(pctText) / 2, -6, 0xFFFFFF, true);
+        font.drawString(pctText, - font.getStringWidth(pctText) / 2, -6, 0xFFFFFF, true);
 
         GlStateManager.popMatrix();
 

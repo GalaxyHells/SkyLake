@@ -6,6 +6,9 @@ import com.galaxyhells.skylake.utils.NotificationManager;
 import com.galaxyhells.skylake.utils.OptionType;
 import com.galaxyhells.skylake.utils.PerformanceUtils;
 import com.galaxyhells.skylake.utils.RenderOptimizer;
+import com.galaxyhells.skylake.utils.WorldUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -24,7 +27,7 @@ public class FancyStatOverlay {
     private static final int HUD_X_OFFSET = 10;
     private static final int HUD_Y_OFFSET = 10;
     private static final int HEAD_SIZE = 40;
-    private static final int BAR_WIDTH = 80;
+    private static final int BAR_WIDTH = 100;
     private static final int BAR_HEIGHT = 10;
     private static final int BAR_SPACING = 2;
     private static final int CURRENCY_ICON_SIZE = 8;
@@ -96,7 +99,7 @@ public class FancyStatOverlay {
         renderExperienceBar(barsX, baseY + (BAR_HEIGHT + BAR_SPACING) * 2);
         
         // Renderizar moedas
-        int currencyY = baseY + HEAD_SIZE + 10;
+        int currencyY = baseY + HEAD_SIZE + 5;
         renderRegularCurrency(baseX, currencyY);
         renderPremiumCurrency(baseX, currencyY + CURRENCY_ICON_SIZE + 4);
     }
@@ -246,34 +249,43 @@ public class FancyStatOverlay {
         GlStateManager.popMatrix();
         GlStateManager.disableTexture2D();
     }
-    
+
     private void renderHealthBar(int x, int y) {
         if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
-        
-        float health = ActionbarParser.currentHP;//mc.thePlayer.getHealth();
-        float maxHealth = ActionbarParser.maxHP;//mc.thePlayer.getMaxHealth();
+
+        float health = ActionbarParser.currentHP; //mc.thePlayer.getHealth();
+        float maxHealth = ActionbarParser.maxHP; //mc.thePlayer.getMaxHealth();
         float healthPercentage = Math.min(health / maxHealth, 1.0f);
-        
+
         // Fundo da barra
         drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT,
-                          new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
-        
+                new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
+
         // Barra de vida
         int filledWidth = (int)(BAR_WIDTH * healthPercentage);
-        Color healthColor = new Color(172, 53, 55, 255); // Verde brilhante
+        Color healthColor = new Color(172, 53, 55, 255);
         drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, healthColor);
-        
+
         // Segmento amarelo (estilo visual)
         if (filledWidth > 15) {
             // Desativado temporariamente
         }
-        
-        // Texto HP
 
+        // Texto HP
         String healthText = String.format("%.0f/%.0f", health, maxHealth);
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(healthText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+
+        // 1. Calcula dinamicamente a largura do texto na tela em pixels
+        int textWidth = PerformanceUtils.getMC().fontRendererObj.getStringWidth(healthText);
+
+        // 2. Calcula a nova posição X:
+        // Começa no fim da barra (x + BAR_WIDTH), volta o tamanho do texto (textWidth)
+        // e subtrai um pequeno valor (ex: 3 pixels) para deixar uma margem/padding elegante da borda externa.
+        int textX = x + BAR_WIDTH - textWidth - 3;
+
+        // 3. Renderiza o texto na posição X corrigida
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(healthText, textX + 1, y + 1, 0xFFFFFFFF);
     }
     
     private void renderManaBar(int x, int y) {
@@ -295,37 +307,57 @@ public class FancyStatOverlay {
         Color manaColor = new Color(0, 255, 255, 255); // Azul ciano
         drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, manaColor);
         
-        // Desenhar texto da mana
+        // Texto Mana
         String manaText = String.format("%.0f/%.0f", mana, maxMana);
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(manaText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+
+        // 1. Calcula dinamicamente a largura do texto na tela em pixels
+        int textWidth = PerformanceUtils.getMC().fontRendererObj.getStringWidth(manaText);
+
+        // 2. Calcula a nova posição X:
+        // Começa no fim da barra (x + BAR_WIDTH), volta o tamanho do texto (textWidth)
+        // e subtrai um pequeno valor (ex: 3 pixels) para deixar uma margem/padding elegante da borda externa.
+        int textX = x + BAR_WIDTH - textWidth - 3;
+
+        // 3. Renderiza o texto na posição X corrigida
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(manaText, textX + 1, y + 1, 0xFFFFFFFF);
     }
     
     private void renderExperienceBar(int x, int y) {
         if (PerformanceUtils.getMC().thePlayer == null) {
             return;
         }
-        
+
         // Usar experiência vanilla do jogador
         float experience = PerformanceUtils.getMC().thePlayer.experience; // 0.0 a 1.0 (progresso para o próximo nível)
         int experiencePercentage = (int)(experience * 100);
-        
+
         // Desenhar fundo da barra com contorno escuro
-        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT, 
+        drawRectWithBorder(x, y, BAR_WIDTH, BAR_HEIGHT,
                           new Color(0, 0, 0, 144), new Color(20, 20, 20, 255), 1);
-        
+
         // Desenhar barra de experiência (verde como barra vanilla)
         int filledWidth = (int)(BAR_WIDTH * experience);
         Color expColor = new Color(85, 255, 85, 255); // Verde claro como barra de experiência vanilla
         drawRect(x + 1, y + 1, filledWidth - 2, BAR_HEIGHT - 2, expColor);
-        
-        // Desenhar texto da experiência
+
+        // Texto EXP
         String expText = experiencePercentage + "%";
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(expText, x + BAR_WIDTH + 5, y - 1, 0xFFFFFFFF);
+
+        // 1. Calcula dinamicamente a largura do texto na tela em pixels
+        int textWidth = PerformanceUtils.getMC().fontRendererObj.getStringWidth(expText);
+
+        // 2. Calcula a nova posição X:
+        // Começa no fim da barra (x + BAR_WIDTH), volta o tamanho do texto (textWidth)
+        // e subtrai um pequeno valor (ex: 3 pixels) para deixar uma margem/padding elegante da borda externa.
+        int textX = x + BAR_WIDTH - textWidth - 3;
+
+        // 3. Renderiza o texto na posição X corrigida
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(expText, textX + 1, y + 1, 0xFFFFFFFF);
     }
-    
+
     private void renderRegularCurrency(int x, int y) {
-        // Simulação de moeda regular (valor da imagem: 431,3m)
-        String currencyAmount = "431,3m";
+        // Obter valor real de coins do scoreboard
+        String currencyAmount = WorldUtils.getCoinsFromScoreboard();
         
         // Desenhar ícone de moeda dourada com contorno
         GlStateManager.disableTexture2D();
@@ -345,12 +377,12 @@ public class FancyStatOverlay {
         GlStateManager.enableTexture2D();
         
         // Desenhar valor da moeda
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y + 2, 0xFFFFFFFF);
     }
     
     private void renderPremiumCurrency(int x, int y) {
-        // Simulação de moeda premium (valor da imagem: 24,62k)
-        String currencyAmount = "24,62k";
+        // Obter valor real de cubos do scoreboard
+        String currencyAmount = WorldUtils.getCubosFromScoreboard();
         
         // Desenhar ícone de diamante azul com contorno
         GlStateManager.disableTexture2D();
@@ -370,7 +402,7 @@ public class FancyStatOverlay {
         GlStateManager.enableTexture2D();
         
         // Desenhar valor da moeda premium
-        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y, 0xFFFFFFFF);
+        PerformanceUtils.getMC().fontRendererObj.drawStringWithShadow(currencyAmount, x + CURRENCY_ICON_SIZE + 5, y + 2, 0xFFFFFFFF);
     }
     
     private void drawRect(int x, int y, int width, int height, Color color) {
