@@ -61,13 +61,13 @@ public class MascoteHUD {
         int y = HUD_Y_OFFSET;
 
         // Desenha o fundo
-        drawBackground(x, y, maxWidth + (BACKGROUND_PADDING * 2), totalHeight);
+        //drawBackground(x, y, maxWidth + (BACKGROUND_PADDING * 2), totalHeight - 2);
 
         // CORREÇÃO CRÍTICA DO OPENGL MANTIDA: Reseta para Branco para os textos não ficarem pretos
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
 
-        int textX = x + BACKGROUND_PADDING;
+        int textX = x;// + BACKGROUND_PADDING;
         int textY = y + BACKGROUND_PADDING;
 
         // Desenha a linha 1: [Nvl 12] Nome do Mascote (Com cor!)
