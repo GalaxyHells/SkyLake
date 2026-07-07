@@ -16,6 +16,7 @@ public class KeybindManager {
     public static KeyBinding openMenuKey;
     public static KeyBinding lockSlotKey;
     public static KeyBinding configKey;
+    public static KeyBinding toggleAutoAttackKey;
 
     // Método para registrar a tecla nas configurações do jogo
     public static void register() {
@@ -28,6 +29,9 @@ public class KeybindManager {
 
         configKey = new KeyBinding("Configurações", Keyboard.KEY_G, "SkyLake");
         ClientRegistry.registerKeyBinding(configKey);
+
+        toggleAutoAttackKey = new KeyBinding("Alterar Auto Ataque", Keyboard.KEY_R, "SkyLake");
+        ClientRegistry.registerKeyBinding(toggleAutoAttackKey);
     }
 
     // Fica ouvindo os inputs do teclado
@@ -47,6 +51,16 @@ public class KeybindManager {
             // Só abre a config se o jogador estiver de fato jogando (sem chat ou pause aberto)
             if (mc.inGameHasFocus && mc.currentScreen == null && SkyLake.optionsService != null) {
                 mc.displayGuiScreen(new ConfigUI(SkyLake.optionsService));
+            }
+        }
+
+        if (toggleAutoAttackKey.isPressed()) {
+            // Só alterna se o jogador estiver jogando
+            if (mc.inGameHasFocus && mc.currentScreen == null && SkyLake.optionsService != null) {
+                boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(com.galaxyhells.skylake.utils.OptionType.AUTO_ATTACK));
+                SkyLake.optionsService.set(com.galaxyhells.skylake.utils.OptionType.AUTO_ATTACK, !currentValue);
+                SkyLake.optionsService.save();
+                mc.thePlayer.addChatMessage(new net.minecraft.util.ChatComponentText("§[SkyLake] Auto Attack: " + (!currentValue ? "§aON" : "§cOFF")));
             }
         }
     }

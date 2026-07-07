@@ -5,6 +5,7 @@ public enum OptionCategoryType {
     RENDER("Renderização"),
     INVENTORY("Inventário"),
     MOVEMENT("Movimento"),
+    COMBAT("Combate"),
     SYSTEM("Sistema"),
     KEYBINDS("Keybinds"),
     UI("Interface");

@@ -9,6 +9,8 @@ import com.galaxyhells.skylake.features.hud.FancyHUD.FancyHotbar;
 import com.galaxyhells.skylake.features.hud.FancyHUD.FancyStatOverlay;
 import com.galaxyhells.skylake.features.hud.Map.MapFeature;
 import com.galaxyhells.skylake.features.hud.StatOverlay;
+import com.galaxyhells.skylake.features.hud.LowHealthWarning;
+import com.galaxyhells.skylake.features.hud.MascoteHUD;
 import com.galaxyhells.skylake.features.hud.timer.MagmaTimer;
 import com.galaxyhells.skylake.features.hud.timer.MutantTimer;
 import com.galaxyhells.skylake.features.inventory.InventoryCenter;
@@ -19,6 +21,7 @@ import com.galaxyhells.skylake.features.render.treasure.TreasureGui;
 import com.galaxyhells.skylake.features.render.treasure.TreasureWaypoint;
 import com.galaxyhells.skylake.features.movement.AutoSprint;
 import com.galaxyhells.skylake.features.movement.AutoFishing;
+import com.galaxyhells.skylake.features.combat.AutoAttack;
 //import com.galaxyhells.skylake.features.render.treasure.TreasureRadar;
 import com.galaxyhells.skylake.features.AutoLogin;
 import com.galaxyhells.skylake.features.itemlog.ItemLogFeature;
@@ -61,11 +64,15 @@ public class SkyLake {
         ClientCommandHandler.instance.registerCommand(new SkyLakeCommand());
         ClientCommandHandler.instance.registerCommand(new AutoLoginCommand());
         ClientCommandHandler.instance.registerCommand(new OpenConfigCommand());
+        com.galaxyhells.skylake.commands.AnnounceCommand announceCommand = new com.galaxyhells.skylake.commands.AnnounceCommand();
+        ClientCommandHandler.instance.registerCommand(announceCommand);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(announceCommand);
 
         // 2. Registro de Listeners Globais
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.listener.ChatListener());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.listener.LoginListener());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.listener.DragonDropAnnouncer());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new com.galaxyhells.skylake.listener.MagmaDropAnnouncer());
 
         // 3. Registro de Features HUD
         // Timers
@@ -73,8 +80,10 @@ public class SkyLake {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new MagmaTimer());
         // Overlays
         MinecraftForge.EVENT_BUS.register(new StatOverlay());
+        MinecraftForge.EVENT_BUS.register(new LowHealthWarning());
         MinecraftForge.EVENT_BUS.register(new FancyHotbar());
         MinecraftForge.EVENT_BUS.register(new FancyStatOverlay());
+        MinecraftForge.EVENT_BUS.register(new MascoteHUD());
         // Item Log
         ItemLogFeature itemLogFeature = new ItemLogFeature();
         MinecraftForge.EVENT_BUS.register(itemLogFeature);
@@ -115,7 +124,10 @@ public class SkyLake {
         MinecraftForge.EVENT_BUS.register(new AutoSprint());
         MinecraftForge.EVENT_BUS.register(new AutoFishing());
 
-        // 8. Registro de Features Sistema
+        // 8. Registro de Features Combat
+        MinecraftForge.EVENT_BUS.register(new AutoAttack());
+
+        // 9. Registro de Features Sistema
         MinecraftForge.EVENT_BUS.register(new AutoLogin());
 
         System.out.println("[" + NAME + "] Mod inicializado com sucesso no modo Raiz!");

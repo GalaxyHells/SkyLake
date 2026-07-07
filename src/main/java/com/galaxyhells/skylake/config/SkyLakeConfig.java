@@ -22,35 +22,44 @@ public class SkyLakeConfig extends GuiScreen {
         // Stat Overlay
         this.buttonList.add(new GuiButton(3, x, yStart + 50, 200, 20, getStatsText()));
 
+        // Low Health Warning
+        this.buttonList.add(new GuiButton(15, x, yStart + 75, 200, 20, getLowHealthWarningText()));
+
         // Mutant Timer
-        this.buttonList.add(new GuiButton(4, x, yStart + 75, 200, 20, getMutantTimerText()));
+        this.buttonList.add(new GuiButton(4, x, yStart + 100, 200, 20, getMutantTimerText()));
 
         // Magma Timer
-        this.buttonList.add(new GuiButton(5, x, yStart + 100, 200, 20, getMagmaTimerText()));
+        this.buttonList.add(new GuiButton(5, x, yStart + 125, 200, 20, getMagmaTimerText()));
 
         // Mutant Highlight
-        this.buttonList.add(new GuiButton(6, x, yStart + 125, 200, 20, getMutanthighlightText()));
+        this.buttonList.add(new GuiButton(6, x, yStart + 150, 200, 20, getMutanthighlightText()));
 
         // Mutant Spawn Boxes
-        this.buttonList.add(new GuiButton(7, x, yStart + 150, 200, 20, getMutantSpawnBoxesText()));
+        this.buttonList.add(new GuiButton(7, x, yStart + 175, 200, 20, getMutantSpawnBoxesText()));
 
         // Fancy HUD
-        this.buttonList.add(new GuiButton(8, x, yStart + 175, 200, 20, getFancyHUDText()));
+        this.buttonList.add(new GuiButton(8, x, yStart + 200, 200, 20, getFancyHUDText()));
 
         // Map Feature
-//        this.buttonList.add(new GuiButton(9, x, yStart + 200, 200, 20, getMapFeatureText()));
+//        this.buttonList.add(new GuiButton(9, x, yStart + 225, 200, 20, getMapFeatureText()));
 
         // Fancy Stat Overlay
-        this.buttonList.add(new GuiButton(10, x, yStart + 225, 200, 20, getFancyStatOverlayText()));
+        this.buttonList.add(new GuiButton(10, x, yStart + 250, 200, 20, getFancyStatOverlayText()));
 
         // Auto Sprint
-        this.buttonList.add(new GuiButton(11, x, yStart + 250, 200, 20, getAutoSprintText()));
+        this.buttonList.add(new GuiButton(11, x, yStart + 275, 200, 20, getAutoSprintText()));
 
         // Auto Login
-        this.buttonList.add(new GuiButton(12, x, yStart + 275, 200, 20, getAutoLoginText()));
+        this.buttonList.add(new GuiButton(12, x, yStart + 300, 200, 20, getAutoLoginText()));
 
         // Auto Fishing
-        this.buttonList.add(new GuiButton(13, x, yStart + 300, 200, 20, getAutoFishingText()));
+        this.buttonList.add(new GuiButton(13, x, yStart + 325, 200, 20, getAutoFishingText()));
+
+        // Auto Attack
+        this.buttonList.add(new GuiButton(14, x, yStart + 350, 200, 20, getAutoAttackText()));
+
+        // Magma Drop Announcer
+        this.buttonList.add(new GuiButton(16, x, yStart + 375, 200, 20, getMagmaDropAnnouncerText()));
     }
 
     private String getBossAlertText() {
@@ -67,6 +76,11 @@ public class SkyLakeConfig extends GuiScreen {
     private String getStatsText() {
         boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.STAT_OVERLAY));
         return "HUD de Stats: " + (value ? "§aON" : "§cOFF");
+    }
+
+    private String getLowHealthWarningText() {
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.LOW_HEALTH_WARNING));
+        return "Alerta de Vida Baixa: " + (value ? "§aON" : "§cOFF");
     }
 
     private String getMutantTimerText() {
@@ -119,6 +133,16 @@ public class SkyLakeConfig extends GuiScreen {
     private String getAutoFishingText() {
         boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_FISHING));
         return "Pescaria Automática: " + (value ? "§aON" : "§cOFF");
+    }
+
+    private String getAutoAttackText() {
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_ATTACK));
+        return "Ataque Automático: " + (value ? "§aON" : "§cOFF");
+    }
+
+    private String getMagmaDropAnnouncerText() {
+        boolean value = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAGMA_DROP_ANNOUNCER));
+        return "Anunciador Drops Magma Boss: " + (value ? "§aON" : "§cOFF");
     }
 
     
@@ -181,6 +205,18 @@ public class SkyLakeConfig extends GuiScreen {
             boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_FISHING));
             SkyLake.optionsService.set(OptionType.AUTO_FISHING, !currentValue);
             button.displayString = getAutoFishingText();
+        } else if (button.id == 14) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.AUTO_ATTACK));
+            SkyLake.optionsService.set(OptionType.AUTO_ATTACK, !currentValue);
+            button.displayString = getAutoAttackText();
+        } else if (button.id == 15) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.LOW_HEALTH_WARNING));
+            SkyLake.optionsService.set(OptionType.LOW_HEALTH_WARNING, !currentValue);
+            button.displayString = getLowHealthWarningText();
+        } else if (button.id == 16) {
+            boolean currentValue = Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.MAGMA_DROP_ANNOUNCER));
+            SkyLake.optionsService.set(OptionType.MAGMA_DROP_ANNOUNCER, !currentValue);
+            button.displayString = getMagmaDropAnnouncerText();
         }
 
         // Salva qualquer alteração no arquivo

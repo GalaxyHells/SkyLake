@@ -7,8 +7,10 @@ public enum OptionType {
     MUTANT_TIMER("Temporizador do Enderman Mutante", OptionCategoryType.HUD, true, Boolean.class),
     MAGMA_TIMER("Temporizador do Magma Boss", OptionCategoryType.HUD, true, Boolean.class),
     STAT_OVERLAY("Barras de Status", OptionCategoryType.HUD, true, Boolean.class),
+    LOW_HEALTH_WARNING("Alerta de Vida Baixa", OptionCategoryType.HUD, true, Boolean.class),
     FANCY_HUD("Hotbar Bonita", OptionCategoryType.HUD, true, Boolean.class),
     FANCY_STAT_OVERLAY("Status Bonita", OptionCategoryType.HUD, true, Boolean.class),
+    MASCOTE_HUD("HUD do Mascote", OptionCategoryType.HUD, true, Boolean.class),
     //MAP_FEATURE("Mapa (Tecla M)", OptionCategoryType.HUD, true, Boolean.class),
     ITEM_LOG("Log de Itens", OptionCategoryType.HUD, true, Boolean.class),
 
@@ -32,10 +34,14 @@ public enum OptionType {
     AUTO_SPRINT("Correr Automático", OptionCategoryType.MOVEMENT, true, Boolean.class),
     AUTO_FISHING("Pescaria Automática", OptionCategoryType.MOVEMENT, true, Boolean.class),
 
+    // Combat Features
+    AUTO_ATTACK("Ataque Automático", OptionCategoryType.COMBAT, true, Boolean.class),
+
     // System Features
     AUTO_LOGIN("Login Automático", OptionCategoryType.SYSTEM, true, Boolean.class),
     BOSS_ALERT("Alerta de Boss", OptionCategoryType.SYSTEM, true, Boolean.class),
     DRAGON_DROP_ANNOUNCER("Anunciador de Drops do Dragão", OptionCategoryType.SYSTEM, true, Boolean.class),
+    MAGMA_DROP_ANNOUNCER("Anunciador de Drops do Magma Boss", OptionCategoryType.SYSTEM, true, Boolean.class),
 
     // Keybinds
     KEY_SLOT_LOCK("Travar Slot", OptionCategoryType.KEYBINDS, 'L', Character.class),
