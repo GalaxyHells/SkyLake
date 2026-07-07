@@ -1,7 +1,7 @@
 package com.galaxyhells.skylake.listener;
 
 import com.galaxyhells.skylake.SkyLake;
-import com.galaxyhells.skylake.features.itemlog.ItemLogFeature;
+import com.galaxyhells.skylake.features.hud.itemlog.ItemLogFeature;
 import com.galaxyhells.skylake.utils.OptionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;

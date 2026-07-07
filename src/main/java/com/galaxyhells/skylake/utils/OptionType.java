@@ -9,7 +9,8 @@ public enum OptionType {
     STAT_OVERLAY("Barras de Status", OptionCategoryType.HUD, true, Boolean.class),
     LOW_HEALTH_WARNING("Alerta de Vida Baixa", OptionCategoryType.HUD, true, Boolean.class),
     FANCY_HUD("Hotbar Bonita", OptionCategoryType.HUD, true, Boolean.class),
-    FANCY_STAT_OVERLAY("Status Bonita", OptionCategoryType.HUD, true, Boolean.class),
+    FANCY_STAT_OVERLAY("Status Bonito", OptionCategoryType.HUD, true, Boolean.class),
+    HIDE_CURRENCY("Esconder dinheiro e cubos no Status Bonito", OptionCategoryType.HUD, false, Boolean.class),
     MASCOTE_HUD("HUD do Mascote", OptionCategoryType.HUD, true, Boolean.class),
     //MAP_FEATURE("Mapa (Tecla M)", OptionCategoryType.HUD, true, Boolean.class),
     ITEM_LOG("Log de Itens", OptionCategoryType.HUD, true, Boolean.class),
@@ -18,11 +19,11 @@ public enum OptionType {
     MUTANT_HIGHLIGHT("Destacar Mutante", OptionCategoryType.RENDER, true, Boolean.class),
     MUTANT_SPAWN_BOXES("Locais de Spawn do Enderman Mutante", OptionCategoryType.RENDER, true, Boolean.class),
     END_CRYSTAL_BOXES("Locais de Spawn do EndCrystal", OptionCategoryType.RENDER, true, Boolean.class),
-    DRAGON_HIGHLIGHT("Destacar Dragão", OptionCategoryType.RENDER, true, Boolean.class),
+    DRAGON_HIGHLIGHT("Destacar Dragão", OptionCategoryType.RENDER, false, Boolean.class),
     TREASURE_WAYPOINT("Waypoints Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
     //TREASURE_RADAR("Radar Tesouros", OptionCategoryType.RENDER, true, Boolean.class),
     HIDE_NAMETAGS("Esconder Nametag vanilla", OptionCategoryType.RENDER, false, Boolean.class),
-    CUSTOM_NAMETAGS("Nametag Customizada", OptionCategoryType.RENDER, false, Boolean.class),
+    CUSTOM_NAMETAGS("Nametag Customizada", OptionCategoryType.RENDER, true, Boolean.class),
 
     // Inventory Features
     RARITY_BACKGROUND("Fundo por Raridade", OptionCategoryType.INVENTORY, true, Boolean.class),

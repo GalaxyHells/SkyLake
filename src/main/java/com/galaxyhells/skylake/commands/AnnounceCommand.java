@@ -74,11 +74,11 @@ public class AnnounceCommand extends CommandBase {
             mensagem.append(args[i]);
         }
 
-        String prefixo;
+        String prefixo = "/g";
         if (tipo.equals("vender")) {
-            prefixo = EnumChatFormatting.GREEN + "[VENDO] " + EnumChatFormatting.WHITE;
+            prefixo += "&2[VENDO] &6";
         } else if (tipo.equals("comprar")) {
-            prefixo = EnumChatFormatting.BLUE + "[COMPRANDO] " + EnumChatFormatting.WHITE;
+            prefixo +="[&1COMPRO] &6";
         } else {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Tipo inválido! Use: vender ou comprar"));
             return;
@@ -108,11 +108,11 @@ public class AnnounceCommand extends CommandBase {
 
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastAnnounceTime >= REPEAT_INTERVAL) {
-            String prefixo;
+            String prefixo = "/g";
             if (repeatTipo.equals("vender")) {
-                prefixo = EnumChatFormatting.GREEN + "[VENDO] " + EnumChatFormatting.WHITE;
+                prefixo += "&2[VENDO] &6";
             } else {
-                prefixo = EnumChatFormatting.BLUE + "[COMPRANDO] " + EnumChatFormatting.WHITE;
+                prefixo += "&1[COMPRANDO] &6";
             }
 
             String mensagemFinal = prefixo + repeatMensagem;

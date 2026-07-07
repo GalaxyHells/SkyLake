@@ -24,7 +24,7 @@ import com.galaxyhells.skylake.features.movement.AutoFishing;
 import com.galaxyhells.skylake.features.combat.AutoAttack;
 //import com.galaxyhells.skylake.features.render.treasure.TreasureRadar;
 import com.galaxyhells.skylake.features.AutoLogin;
-import com.galaxyhells.skylake.features.itemlog.ItemLogFeature;
+import com.galaxyhells.skylake.features.hud.itemlog.ItemLogFeature;
 import com.galaxyhells.skylake.listener.ItemLogListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;

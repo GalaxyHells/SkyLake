@@ -1,6 +1,4 @@
-package com.galaxyhells.skylake.features.itemlog;
-
-import net.minecraft.item.ItemStack;
+package com.galaxyhells.skylake.features.hud.itemlog;
 
 /**
  * Representa uma entrada no log de itens coletados

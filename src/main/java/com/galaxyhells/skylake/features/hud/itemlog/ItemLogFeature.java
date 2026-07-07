@@ -1,4 +1,4 @@
-package com.galaxyhells.skylake.features.itemlog;
+package com.galaxyhells.skylake.features.hud.itemlog;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -74,16 +74,16 @@ public class ItemLogFeature {
             ItemLogEntry entry = entries.get(i);
             String text = entry.getDisplayText();
             
-            int x = sr.getScaledWidth() / 2;
+            int x = 10;///sr.getScaledWidth() / 2;
             int y = (int) entry.getDisplayY();
             
             // Centraliza o texto
             int textWidth = mc.fontRendererObj.getStringWidth(text);
-            x = x - (textWidth / 2);
+            //x = x - (textWidth / 2);
 
             // Desenha o texto com alpha
             int color = 0xFFFFFF;
-            mc.fontRendererObj.drawStringWithShadow(text, x, y, color);
+            mc.fontRendererObj.drawStringWithShadow(text, x, y + 50, color);
         }
     }
 

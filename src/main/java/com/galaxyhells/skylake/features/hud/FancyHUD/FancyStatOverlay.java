@@ -357,6 +357,8 @@ public class FancyStatOverlay {
     }
 
     private void renderRegularCurrency(int x, int y) {
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.HIDE_CURRENCY))) return;
+
         // Obter valor real de coins do scoreboard
         String currencyAmount = WorldUtils.getCoinsFromScoreboard();
         
@@ -382,6 +384,8 @@ public class FancyStatOverlay {
     }
     
     private void renderPremiumCurrency(int x, int y) {
+        if (!Boolean.TRUE.equals(SkyLake.optionsService.get(OptionType.HIDE_CURRENCY))) return;
+
         // Obter valor real de cubos do scoreboard
         String currencyAmount = WorldUtils.getCubosFromScoreboard();
         

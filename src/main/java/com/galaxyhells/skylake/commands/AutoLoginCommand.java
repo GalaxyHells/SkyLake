@@ -17,14 +17,14 @@ public class AutoLoginCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/autologin <save|remove|status> [senha]";
+        return "/autologin <salvar|remover|status> [senha]";
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
             sender.addChatMessage(new ChatComponentText(
-                EnumChatFormatting.RED + "Uso: /autologin <save|remove|status> [senha]"));
+                EnumChatFormatting.RED + "Uso: /autologin <salvar|remover|status> [senha]"));
             return;
         }
 
@@ -32,20 +32,20 @@ public class AutoLoginCommand extends CommandBase {
         String subCommand = args[0].toLowerCase();
 
         switch (subCommand) {
-            case "save":
+            case "salvar":
                 if (args.length < 2) {
                     sender.addChatMessage(new ChatComponentText(
-                        EnumChatFormatting.RED + "Uso: /autologin save <senha>"));
+                        EnumChatFormatting.RED + "Uso: /autologin salvar <senha>"));
                     return;
                 }
                 String password = args[1];
                 AutoLogin.saveCredentials(playerName, password);
                 sender.addChatMessage(new ChatComponentText(
-                    EnumChatFormatting.GREEN + "[SkyLake] Senha salva para o jogador " + playerName + 
-                    ". Use /autologin remove para remover."));
+                        EnumChatFormatting.GREEN + "[SkyLake] Senha salva para o jogador " + playerName +
+                    ". Use /autologin remover para remover."));
                 break;
 
-            case "remove":
+            case "remover":
                 if (AutoLogin.hasCredentials(playerName)) {
                     AutoLogin.removeCredentials(playerName);
                     sender.addChatMessage(new ChatComponentText(
